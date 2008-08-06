@@ -1,0 +1,24 @@
+<Files "*.*">
+ Deny from all
+</Files>
+
+<Files "index.php">
+ Allow from all
+</Files>
+
+<Files "getnew.php">
+ Allow from all
+</Files>
+
+<Files "style.css">
+ Allow from all
+</Files>
+
+<Files "updater.js">
+ Allow from all
+</Files>
+
+RewriteEngine on
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(\w*)-?([0-9]*)(.*)$ index.php?act=$1&c=$2&$3 [L,QSA]
