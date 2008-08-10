@@ -9,20 +9,18 @@ $ip=getenv("REMOTE_ADDR");
 
 // print_r($_REQUEST);
 if (!isset($_REQUEST['sendlater'])) {
+/*
 $tmpfname = tempnam("/var/www/gate/bin/", "msg");
 $handle = fopen($tmpfname, "w");
  if ($USER['set_header'] != 0)
 {
-fwrite($handle, "From " .$ip. " # http://jlarky.info/gate" );
+fwrite($handle, "From " .$ip. " # http://jlarky.dorms.spbu.ru/gate" );
 fwrite($handle, "\n");
 };
-//fwrite($handle, iconv("UTF-8", "KOI8-R", $_POST['P_M']) );
-fwrite($handle, stripslashes($_POST['P_M'] ));
 
-#$tmps=ereg_replace("_", "",ereg_replace("-", "", $_POST['P_F']));
-#if (ctype_alnum( $tmps )) { $from=$_POST['P_F']; } else {$from=$ip;};
+fwrite($handle, stripslashes(str_replace("\r", "", $_POST['P_M'] )));
+
 $from=escapeshellcmd($_REQUEST['P_F']);
-#$tmps=ereg_replace("_", "",ereg_replace("-", "", $_POST['P_T']));
 $to=escapeshellcmd($_REQUEST['P_T']);
 $to=ereg_replace("\*", "14 15 16 ALTNET MSHOME NT WORKGROUP",$to);
 $to=ereg_replace("\ ", "\" \"",$to);
@@ -32,10 +30,8 @@ fclose($handle);
 system("
 export HOME=/home/jlarky
 export LANG=ru_RU.UTF8
-#| grep \"were sent\" 
 ulimit -t 1
 cat ".$tmpfname."| popupnicheg -n \"".$from."\" -H 0:e0:29:2e:82:88 -I 10.0.144.1 \"".$to."\" | grep \"were sent\" > ".$tmpfname.".txt # 2>&1
-#cat ".$tmpfname."| popup_sender -d 5 -B 10.0.255.255 -n \"".$from."\" \"".$to."\" > ".$tmpfname.".txt 2>&1
 ");
 
 
@@ -44,12 +40,97 @@ $content = fread( $handle, filesize( $tmpfname.".txt" ));
 fclose($handle);
 unlink($tmpfname);
 unlink($tmpfname.".txt");
+*/
+// раньше мы делали так
+
+// а счас так
+  
+
+function send_popup($from, $to, $msg) {
+$descriptorspec = array(
+   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+   2 => array("pipe", "w") // stderr is a file to write to
+);
+
+$cwd = '.';
+$to=mb_ereg_replace("\*", "14 15 16 ALTNET MSHOME NT WORKGROUP",$to);
+$from=mb_ereg_replace("\*", "'*'",$from);
+$env = array('IF' => 'eth1', 'to' => $to, 'netbios' => $from, 'HOME' => '/home/jlarky', 'LANG' => 'ru_RU.UTF-8');
+
+$process = proc_open('popupnicheg -H 0:e0:29:2e:82:88 -I 10.0.144.1 --interface $IF --netbios $netbios $to', $descriptorspec, $pipes, $cwd, $env);
+
+if (is_resource($process)) {
+    fwrite($pipes[0], $msg);
+    fclose($pipes[0]);
+    $output=stream_get_contents($pipes[1]);
+    fclose($pipes[1]);
+    $output.=stream_get_contents($pipes[2]);
+    fclose($pipes[2]);
+    $return_value = proc_close($process);
+return $output;
+}
+}
+function send_epopup($from, $to=Array(), $msg) {
+	mysql_select_db("popup");
+	mysql_query("SET NAMES 'utf8'") or die("Invalid query: " . mysql_error());
+	$ip="10.0.144.1";$mac="00:e0:29:2e:82:88";$i=0;
+   foreach ($to as $comp) {
+	$comp=mysql_real_escape_string($comp);$msg=mysql_real_escape_string($msg);
+	mysql_query("INSERT INTO `popups` (`src_mac`, `src_ip`, `src_ntb`, `src_mls`, `dst_mac`, `dst_ntb`, `dst_mls`, `msg`)
+	VALUES ('$mac', '$ip', '$from', '$from', '$mac', '$comp', '$comp', '$msg') ;");
+	echo mysql_error();$i++;
+   }
+	return $i;
+}
+
+ if (isset($USER['set_header']) and $USER['set_header'])
+	$msg = "From $ip # http://jlarky.dorms.spbu.ru/gate\n";
+  else
+  	$msg="";
+  	
+  $msg .= stripslashes(str_replace("\r", "", $_POST['P_M'] ));
+
+  mysql_select_db($INFO['base_name']);
+  mysql_query("SET NAMES 'utf8'") or die("Invalid query: " . mysql_error());
+  $data=mysql_query("select LOWER(`name`) from `alias` group by `name`;");
+  $localnames=Array();
+  while ($row = mysql_fetch_row($data)) {
+  	$localnames[]=$row[0];
+  }
+
+ $popup_to=explode(" ", $_REQUEST['P_T']);
+ $emulate_to=Array();
+ foreach ( $popup_to as $key => $comp) {
+	if (in_array($comp, $localnames) ) {
+		unset($popup_to[$key]); $emulate_to[]=$comp;
+	}
+ }
+ $epopups=send_epopup($_REQUEST['P_F'], $emulate_to, $msg);
+ 
+ $popup_to=join(" ", $popup_to);
+ foreach ($localnames as $name) //"(jlarky)([$|\ ])", "\\1%10.0.144.1\\2"
+  $popup_to=mb_eregi_replace("($name)($|\ )", "\\1%127.0.0.1%00:e0:29:2e:82:88\\2", $popup_to);
+
+
+$content="";
+$res=send_popup($_REQUEST['P_F'], $popup_to, $msg);
+$errs=Array();
+$res=explode("\n", $res);
+foreach ($res as $str) {
+	if (mb_ereg("[^']+'(.+)' was not sent.*", $str, $reg_srt))
+	$content .= "Ошибка отправки на <font color=\"red\">{$reg_srt[1]}</font><br />\n";
+	elseif (mb_ereg(".*([0-9]+)/([0-9]+) were sent.*", $str, $reg_srt)) 
+	$content .= ($reg_srt[1]+$epopups)." из ".($reg_srt[2]+$epopups)." было отправлено.<br />\n";
+}
+//$content .="<pre>".print_r($errs, 1)."</pre>";
+
 } else {
 if ($USER['user_perm'] >= 1) {
 include "inc/sendlater.php";
 if ( (isset($_REQUEST['P_T'])) and ($_REQUEST['P_T']!="") ) {
 $content="Сообщение добавленно в очередь";
-$tmp= new PopupSender($_REQUEST['P_T'], $_REQUEST['P_F'], "From " .$ip. " # http://jlarky.info/gate\n".$_REQUEST['P_M']);
+$tmp= new PopupSender($_REQUEST['P_T'], $_REQUEST['P_F'], "From " .$ip. " # http://jlarky.dorms.spbu.ru/gate\n".$_REQUEST['P_M']);
 } else 
 {
 $content="вазник эрор";
@@ -60,7 +141,12 @@ $content="Извините Вам эта функция не доступна п
 } 
 }
 	$tpl->assign(array( "SENDLOG"	=> "<p align=center>".$content."<p>"));
-	$tpl->assign(array( "MESSAGE"	=> stripslashes($_POST['P_M'])));
+	$_POST['P_M'] = stripslashes($_POST['P_M']);
+ 	$_POST['P_M'] = htmlspecialchars($_POST['P_M']);
+	$_POST['P_M'] = str_replace ("{", "&#123;", $_POST['P_M']);
+	$_POST['P_M'] = str_replace ("}", "&#125;", $_POST['P_M']);
+
+	$tpl->assign(array( "MESSAGE"	=> $_POST['P_M']));
 	$tpl->assign(array( "P_T"	=> htmlspecialchars($_REQUEST['P_T'])));
 	$tpl->assign(array( "P_F"	=> htmlspecialchars($_REQUEST['P_F'])));
 	$tpl->parse("CONTENT", array("send"));
@@ -69,14 +155,24 @@ $content="Извините Вам эта функция не доступна п
 
 if (@$_REQUEST['id'] != "") {
 
+	if ($USER['set_outgoing']) { # показывать ли исходящие сообщения
+	$outgoing="UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`src_ntb`)";
+	} else {
+	$outgoing=0;
+	};
+
+
 ############
 # SELECT FROM DB
-  $s = @mysql_fetch_row(mysql_query("SELECT * FROM `".$INFO['base_tabl']. "`,`".$INFO['alias_tabl']."` WHERE  (`".$INFO['base_tabl']."`.id='" . intval($_GET['id']) . "') and ((UPPER(`".$INFO['base_tabl']. "`.dst_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."') or `dst_mac`='ff:ff:ff:ff:ff:ff')"));
+  $query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE (`id`=".intval($_REQUEST['id']).") and ((`dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` WHERE `uid`=1 and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`dst_ntb`) or $outgoing))) or `dst_mac`='ff:ff:ff:ff:ff:ff') LIMIT 1";
+  $s = @mysql_fetch_row(mysql_query($query));
   $s[8] = ">" . $s[8];
   $s[8] = str_replace("\r", "",$s[8]);
   $s[8] = str_replace("\n", "\n>",$s[8]);
   $s[8] = $s[8]."\r\n>\r\n";
   $s[8] = htmlspecialchars($s[8	]);
+	$s[8] = str_replace ("{", "&#123;", $s[8]);
+	$s[8] = str_replace ("}", "&#125;", $s[8]);
 	$tpl->assign(array( "MESSAGE"	=> $s[8]));
 	$tpl->assign(array( "P_T"	=> $s[3]));
 	$tpl->assign(array( "P_F"	=> $user_name));
@@ -103,15 +199,18 @@ if ($USER['user_perm']==0) {
 ;}
 else {
 if ($USER['set_outgoing']) { # показывать ли исходящие сообщения
-$outgoing="UPPER(`".$INFO['base_tabl']. "`.src_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."'";
+//$outgoing="UPPER(`".$INFO['base_tabl']. "`.src_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."'";
+$outgoing="UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`src_ntb`)";
 } else {
 $outgoing=0;
 };
-$query="SELECT * FROM `".$INFO['base_tabl']. "`,`".$INFO['alias_tabl']."` WHERE (UPPER(`".$INFO['base_tabl']. "`.dst_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."') or ($outgoing and `dst_mac`!='ff:ff:ff:ff:ff:ff') ORDER BY `".$INFO['base_tabl']. "`.id DESC LIMIT " . $c . ", ".$mpopups;
+//$query="SELECT * FROM `".$INFO['base_tabl']. "`,`".$INFO['alias_tabl']."` WHERE (UPPER(`".$INFO['base_tabl']. "`.dst_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."') or ($outgoing and `dst_mac`!='ff:ff:ff:ff:ff:ff') ORDER BY `".$INFO['base_tabl']. "`.id DESC LIMIT " . $c . ", ".$mpopups;
+
+$query="SELECT * FROM `".$INFO['base_tabl']. "` where `dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` where `uid`='$user_id' and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`popups`.`dst_ntb`) or $outgoing) ) order by `id` desc limit " . $c . ", ".$mpopups;
 };
 } else {$query="SELECT * FROM ".$INFO['base_tabl']. " WHERE dst_mac='ff:ff:ff:ff:ff:ff' ORDER BY id DESC LIMIT " . $c . ", $mpopups";};
 
-if ($USER['user_id'] == 1 and $jl_act=="search2") {
+if (0 and $USER['user_id'] == 1 and $jl_act=="search2") {
 $who=$_REQUEST['who'];
 $query="SELECT * FROM ".$INFO['base_tabl']. " WHERE ( ((UPPER(src_ntb)='JLARKY' or UPPER(src_ntb)='PROXY') and UPPER(dst_ntb)=UPPER('$who')) or ((UPPER(dst_ntb)='JLARKY' or UPPER(dst_ntb)='PROXY') and UPPER(src_ntb)=UPPER('$who')) ) and dst_mac!='ff:ff:ff:ff:ff:ff' ORDER BY id DESC LIMIT " . $c . ", $mpopups";
 };
@@ -139,64 +238,60 @@ $text=$s[1];
 # BROWSE BEGING
 if ($jl_act=="browse")
 {
+	$cp=-1;
+	$c=-1;
+	$cn=-1;
+	
+	############
+	# SELECT FROM DB
+	mysql_select_db($INFO['base_name']);
+	mysql_query("SET NAMES 'utf8'") or die("Invalid query: " . mysql_error());
 
-$s = @mysql_fetch_row(mysql_query("SELECT MAX(`id`) FROM ".$INFO['base_tabl']));
-if (isset($s[0])) {
-$cmax=intval($s[0]);
-} else {
-$cmax=0;
-};
-//$tpl->assign( array( "CP" => $c-1));
-//$tpl->assign( array( "CN" => $c+1));
-//$tpl->assign( array( "C" => $cmax));
-//	$tpl->parse("NAVIGATE", array("navigate"));
+	if ($USER['set_outgoing']) { # показывать ли исходящие сообщения
+	$outgoing="UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`src_ntb`)";
+	} else {
+	$outgoing=0;
+	};
 
-
-############
-# SELECT FROM DB
-  mysql_select_db($INFO['base_name']);
-  mysql_query("SET NAMES 'utf8'") or die("Invalid query: " . mysql_error());
-
-
-$query="SELECT MAX(`".$INFO['base_tabl']."`.`id`) FROM `".$INFO['base_tabl']. "`,`".$INFO['alias_tabl']."` WHERE ((UPPER(`".$INFO['base_tabl']. "`.dst_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."') or `dst_mac`='ff:ff:ff:ff:ff:ff') limit 1";
-//$e = mysql_query($query);
-//$s = @mysql_fetch_row($e);
-$cmax=intval($s[0]);
-
-$_REQUEST['c']=min($_REQUEST['c'], $cmax);
-$query="SELECT MIN(`".$INFO['base_tabl']."`.`id`)
- FROM `".$INFO['base_tabl']. "`,`".$INFO['alias_tabl']."` WHERE  (`".$INFO['base_tabl']."`.id>='" . intval($_REQUEST['c']) . "') and ((UPPER(`".$INFO['base_tabl']. "`.dst_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."') or `dst_mac`='ff:ff:ff:ff:ff:ff') limit 1";
-$e = mysql_query($query);
-$s = @mysql_fetch_row($e);
-$c=intval($s[0]);
-
-$query="SELECT MIN(`".$INFO['base_tabl']."`.`id`)
- FROM `".$INFO['base_tabl']. "`,`".$INFO['alias_tabl']."` WHERE  (`".$INFO['base_tabl']."`.id>'" . intval($c) . "') and ((UPPER(`".$INFO['base_tabl']. "`.dst_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."') or `dst_mac`='ff:ff:ff:ff:ff:ff') limit 1";
-$e = mysql_query($query);
-$s = @mysql_fetch_row($e);
-$cn=intval($s[0]);
-if ($cn==0) {$cn=$c+1;};
-
-$query="SELECT MAX(`".$INFO['base_tabl']."`.`id`)
- FROM `".$INFO['base_tabl']. "`,`".$INFO['alias_tabl']."` WHERE  (`".$INFO['base_tabl']."`.id<'" . intval($c) . "') and ((UPPER(`".$INFO['base_tabl']. "`.dst_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."') or `dst_mac`='ff:ff:ff:ff:ff:ff') limit 1";
-$e = mysql_query($query);
-$s = @mysql_fetch_row($e);
-$cp=intval($s[0]);
-
-//echo "$cmax $cn $c $cp";
-$tpl->assign( array( "CP" => $cp));
-$tpl->assign( array( "CN" => $cn));
-$tpl->assign( array( "C" => $cmax));
-$tpl->assign( array( "MPOPUPS" => ""));
-	$tpl->parse("NAVIGATE", array("navigate"));
-
-$query="SELECT * FROM `".$INFO['base_tabl']. "`,`".$INFO['alias_tabl']."` WHERE  (`".$INFO['base_tabl']."`.id='" . intval($c) . "') and ((UPPER(`".$INFO['base_tabl']. "`.dst_ntb)=UPPER(`".$INFO['alias_tabl']."`.name) and UPPER(`".$INFO['alias_tabl']."`.uid)='".$user_id."') or `dst_mac`='ff:ff:ff:ff:ff:ff') limit 1";
-  if (isset($query)) {
-$e = mysql_query($query) or die("Invalid query: " . mysql_error());
-
-	include "popups.php";
-	$tpl->assign(array( "CONTENT"	=> "{POPUPS}"));
-};
+if (intval($_REQUEST['c']) < 30) $_REQUEST['c']=30;
+	$query="SELECT `id` FROM `".$INFO['base_tabl']. "` WHERE (`id`<=".intval($_REQUEST['c']).") and ((`dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` WHERE `uid`='{$USER['user_id']}' and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`dst_ntb`) or $outgoing))) or `dst_mac`='ff:ff:ff:ff:ff:ff') ORDER BY `id` DESC LIMIT 2";
+	$e = mysql_query($query);
+	if ($e) {
+	$s = @mysql_fetch_row($e);
+	$c=intval($s[0]);
+// 	echo $c."-";
+	$s = @mysql_fetch_row($e);
+	$cp=intval($s[0]);
+// 	echo $cp;
+	};
+	$query="SELECT `id` FROM `".$INFO['base_tabl']. "` WHERE (`id`>".intval($_REQUEST['c']).") and ((`dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` WHERE `uid`='{$USER['user_id']}' and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`dst_ntb`) or $outgoing))) or `dst_mac`='ff:ff:ff:ff:ff:ff') ORDER BY `id` ASC LIMIT 1";
+	$e = mysql_query($query);
+	if ($e) {
+	$s = @mysql_fetch_row($e);
+	$cn=intval($s[0]);
+// 	echo "-".$cn;
+	};
+	if ($c<=0) {
+	$c=0;$cp=0;
+	};
+	if ($cn<=0) {
+	$cn=$c+1;
+	}
+	
+	//echo "$cmax $cn $c $cp";
+	$tpl->assign( array( "CP" => $cp));
+	$tpl->assign( array( "CN" => $cn));
+	$tpl->assign( array( "C" => $c));
+	$tpl->assign( array( "MPOPUPS" => ""));
+		$tpl->parse("NAVIGATE", array("navigate"));
+// 	$c=396711;
+	$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE  `".$INFO['base_tabl']."`.id='".intval($c)."' limit 1";
+	if (isset($query)) {
+	$e = mysql_query($query) or die("Invalid query: " . mysql_error());
+	
+		include "popups.php";
+		$tpl->assign(array( "CONTENT"	=> "{POPUPS}"));
+	};
 }; # BROWSE END
 
 
