@@ -40,9 +40,11 @@ $mpopups=20;
 	$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE  (`dst_mac`='ff:ff:ff:ff:ff:ff') and (`".$INFO['base_tabl']."`.id>'".intval($c)."') order by id limit 1";
 	if (isset($query)) {
 $nn=0;
+include "inc/popups.php";
+
 while ($nn <2) {
 	$e = mysql_query($query) or die("Invalid query: " . mysql_error());
-		include "inc/popups.php";
+		$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
 if ($tpl->POPUPS) {
 break;
 ob_flush();

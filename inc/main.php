@@ -145,6 +145,7 @@ $query="SELECT * FROM ".$INFO['base_tabl']. " WHERE ( ((UPPER(src_ntb)='JLARKY' 
 $e = mysql_query($query) or die("Invalid query: " . mysql_error());
 
 	include "popups.php";
+	$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
 	$tpl->assign(array( "CONTENT"	=> "{POPUPS}"));
 };
 }; # GATE and PRIVATE END
@@ -217,6 +218,7 @@ if (intval($_REQUEST['c']) < 30) $_REQUEST['c']=30;
 	$e = mysql_query($query) or die("Invalid query: " . mysql_error());
 	
 		include "popups.php";
+		$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
 		$tpl->assign(array( "CONTENT"	=> "{POPUPS}"));
 	};
 }; # BROWSE END

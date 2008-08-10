@@ -42,6 +42,7 @@ if (!function_exists('popup_messageparse')) {
 		return $message.$spam;
 	}
 }
+if (!function_exists('popup_parse')) {
 /**
  * Parse popup message
  *
@@ -68,6 +69,5 @@ function popup_parse($mysql_resource) {
   	}
 	return $output;
 }
-	$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
-
+}
 ?>
