@@ -1,9 +1,7 @@
 <?php
-if (isset($INFO['act'][$_REQUEST['act']]))
-		{ $jl_act=$_REQUEST['act'];} else {$jl_act=$INFO['default_act'] ;};
 # SEND BEGIN
 if ($jl_act=="send") {
-	$tpl->assign(array( "NAVIGATE"	=> ""));
+	$vars['navigate']='';
 if (isset($_REQUEST['P_F']) and isset($_REQUEST['P_T']) and isset($_REQUEST['P_M'])) {
 $ip=getenv("REMOTE_ADDR");
 
@@ -207,19 +205,18 @@ if (intval($_REQUEST['c']) < 30) $_REQUEST['c']=30;
 	}
 	
 	//echo "$cmax $cn $c $cp";
-	$tpl->assign( array( "CP" => $cp));
-	$tpl->assign( array( "CN" => $cn));
-	$tpl->assign( array( "C" => $c));
-	$tpl->assign( array( "MPOPUPS" => ""));
-		$tpl->parse("NAVIGATE", array("navigate"));
-// 	$c=396711;
+	$vars['cn']	=  $cn;
+	$vars['cp']	=  $cp;
+	$vars['c']	=  $c;
+	$vars['mpopups']=  $mpopups;
+	$vars['navigate']=theme('navigate', $vars);
 	$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE  `".$INFO['base_tabl']."`.id='".intval($c)."' limit 1";
 	if (isset($query)) {
 	$e = mysql_query($query) or die("Invalid query: " . mysql_error());
 	
 		include "popups.php";
-		$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
-		$tpl->assign(array( "CONTENT"	=> "{POPUPS}"));
+	$vars['content']= popup_parse($e);
+
 	};
 }; # BROWSE END
 
@@ -251,5 +248,7 @@ if ($jl_act=="settings" and $user_perm>0) {
 
 
 if ($user_perm==1) {$tpl->assign(array( "LOGOUT1"=>"","LOGOUT2"=>""));};
+	if ($vars['content']) $tpl->assign(array( "CONTENT"	=> $vars['content']));
+
 	$tpl->parse("MAIN", 	array("main"));
 ?>

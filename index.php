@@ -73,42 +73,42 @@ $vars=Array();
 
 ############
 # NAVIGATE
-  if (isset($_REQUEST['act'])) { $act = $_REQUEST['act'];} else {$act = "gate";};
-						  $tpl->assign( array( "ACT" => $act));
+	if (isset($INFO['act'][$_REQUEST['act']]))
+		     $jl_act=$_REQUEST['act'];
+		else $jl_act=$INFO['default_act'];
 
-  if (isset($_GET['c'])) { $c = intval($_GET['c']);} else {$c = 0;};
-						  $tpl->assign( array( "C" => $c));
-  if ($c <= $mpopups)	{ $tpl->assign( array( "CN" => "0")); }
-				else	{ $tpl->assign( array( "CN" => $c-$mpopups)); };
-						  $tpl->assign( array( "CP" => $c+$mpopups));
+	$act		= $jl_act;
+	$c		= max(0, intval($_REQUEST['c']));
+	$vars['act']	= $act;
+	$vars['c']	= $c;
+	$vars['cn']	= max(0, $c-$mpopups);
+	$vars['cp']	= max(0, $c+$mpopups);
+
   if (isset($_GET['u'])) $_REQUEST['u']=$_GET['u'];
   if (isset($_REQUEST['u'])) { $u = ( $_REQUEST['u']==0 ? 0 : max(10,intval($_REQUEST['u'])));} else {$u = 0;};
-						  $tpl->assign( array( "U" => $u));
-						  $tpl->assign( array( "MPOPUPS" => $mpopups));
-						  setcookie("u", $u, 0, "/gate");
+		  setcookie("u", $u, 0, "/gate");
+
+	$vars['u']	= $u;
+	$vars['mpopups']= $mpopups;
 
   if (!$u == 0 and ($act=="gate" or $act=="private")) {
-   						  $tpl->assign( array( "META" => $tpl->get_assigned("META").
-						  "<meta http-equiv=\"Refresh\" content=\"{U}; url={ACT}-{C}&amp;u={U}\" />" ));
-	$vars['head'] .= "<meta http-equiv=\"Refresh\" content=\"{U}; url={ACT}-{C}&amp;u={U}\" />";
-
-				};
+	$vars['head'] .= "<meta http-equiv=\"Refresh\" content=\"$u; url=$act-$c&amp;u=$u\" />";
+	};
 
   if ($act=="gate" and isset($_COOKIE['has_js']) and $c == 0) {
-	$vars['head'] .= '<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>
+	$vars['head'] .= '
+<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>
 <script type="text/javascript" src="/js/jquery.timer.js"></script>
 <script type="text/javascript" src="updater.js"></script>';
- 						  $tpl->assign( array( "SCRIPTS" => '<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>
-<script type="text/javascript" src="/js/jquery.timer.js"></script>
-<script type="text/javascript" src="updater.js"></script>'));
   }
-	$tpl->parse("NAVIGATE", array("navigate"));
+	$vars['navigate'] = theme('navigate', $vars);
 
 ############
 # MAIN
+
 	include "inc/main.php";
-	$vars['navigate'] = $tpl->NAVIGATE;
-	$vars['main']	= $tpl->MAIN;
+	if (!$vars['main']) 
+		$vars['main']	= $tpl->MAIN;
 
 ############
 # STBAR
@@ -122,7 +122,7 @@ $vars=Array();
 ################
 # Making content
 ################
-if ($_REQUEST['new']) {
+if ($_REQUEST['new'] or 1) {
  print theme('index', $vars);
 
 } else {
