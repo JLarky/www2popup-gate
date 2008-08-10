@@ -143,20 +143,19 @@ $query="SELECT * FROM ".$INFO['base_tabl']. " WHERE ( ((UPPER(src_ntb)='JLARKY' 
 $e = mysql_query($query) or die("Invalid query: " . mysql_error());
 
 	include "popups.php";
-	$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
-	$tpl->assign(array( "CONTENT"	=> "{POPUPS}"));
+	$vars['content']=popup_parse($e);
 };
 }; # GATE and PRIVATE END
 
 # ABOUT BEGIN
 if ($jl_act=="about") {
-	$tpl->assign(array( "NAVIGATE"	=> ""));
+	$vars['navigate']='';
 $text="";
 $s = @mysql_fetch_row(mysql_query("SELECT * FROM ".$INFO['texts_tabl']." WHERE `id`='1'"));
 if (isset($s[1])) {
 $text=$s[1];
 }
-	$tpl->assign(array( "CONTENT"	=> $text));
+	$vars['content']=$text;
 }; # ABOUT END
 
 
@@ -215,8 +214,8 @@ if (intval($_REQUEST['c']) < 30) $_REQUEST['c']=30;
 	$e = mysql_query($query) or die("Invalid query: " . mysql_error());
 	
 		include "popups.php";
-		$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
-		$tpl->assign(array( "CONTENT"	=> "{POPUPS}"));
+	$vars['content']= popup_parse($e);
+
 	};
 }; # BROWSE END
 
@@ -226,14 +225,14 @@ if (intval($_REQUEST['c']) < 30) $_REQUEST['c']=30;
 # STAT BEGING
 if ($jl_act=="stat") {
 	include "stat.php";
-	$tpl->assign(array( "NAVIGATE"	=> ""));
+	$vars['navigate']='';
 	$tpl->assign(array( "CONTENT"	=> "{STAT}"));
 }; # STAT END
 
 # SEARCH BEGING
 if ($jl_act=="search") {
 //	include "stat.php";
-	$tpl->assign(array( "NAVIGATE"	=> ""));
+	$vars['navigate']='';
 	$tpl->assign(array( "CONTENT"	=> "{STAT}"));
 	$tpl->parse("CONTENT", 	array("search"));
 }; # SEARCH END
@@ -242,11 +241,14 @@ if ($jl_act=="search") {
 # SETTINGS BEGING
 if ($jl_act=="settings" and $user_perm>0) {
 	include "settings.php";
-	$tpl->assign(array( "NAVIGATE"	=> ""));
+	$vars['navigate']='';
 	$tpl->assign(array( "CONTENT"	=> "{SETTINGS}"));
 }; # SETTINGS END
 
 
 if ($user_perm==1) {$tpl->assign(array( "LOGOUT1"=>"","LOGOUT2"=>""));};
+	if ($vars['content']) $tpl->assign(array( "CONTENT"	=> $vars['content']));
+	//var_dump($vars['content']);
+
 	$tpl->parse("MAIN", 	array("main"));
 ?>

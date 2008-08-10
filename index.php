@@ -42,7 +42,7 @@ $vars=Array();
 
 	$tpl->assign(
 		array( 
-			"CONTENT"		=> "<tr><td>No items to display</td></tr>",
+//			"CONTENT"		=> "<tr><td>No items to display</td></tr>",
 			"LOGOUT1"		=> "<!--",
 			"LOGOUT2"		=> "-->",
 			"P_F"			=> $USER['user_name'],
