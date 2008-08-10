@@ -71,6 +71,7 @@ class Template {
    * @return void
    */
   function set_vars($vars, $clear = false) {
+    var_dump($vars);
     if($clear) {
       $this->vars = $vars;
     }
