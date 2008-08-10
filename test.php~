@@ -1,7 +1,0 @@
-<?php
-include "lib/theme.php";
-
-var_dump(theme("popup", Array('abc' => ".tpl.php")));
-var_dump(theme("popup", Array('abc2' => ".tpl.php2")));
-
-?>

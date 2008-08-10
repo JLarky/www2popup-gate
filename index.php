@@ -11,6 +11,8 @@ mysql_select_db($INFO['base_name']);
 include("inc/cookie.php");
 include("inc/header.php");
 include("inc/fasttemplates.php");
+include("lib/theme.php");
+
 // include("inc/settings.php");
 // include("inc/stat.php");
 
