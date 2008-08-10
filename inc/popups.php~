@@ -1,9 +1,8 @@
 <?php
-
 if (!function_exists('popup_messageparse')) {
 
 	/**
-	 * Parse message body and add google adSense
+	 * Parse message body and add Google adSense
 	 *
 	 * @param string message message body
 	 * @param string adsense TRUE for include adsense
@@ -43,29 +42,32 @@ if (!function_exists('popup_messageparse')) {
 		return $message.$spam;
 	}
 }
-
-################################
-# output:	{POPUPS}
-################################
-
-############
-# PROCESSING DATA
-static $pcont=0;
-$output='';
-$vars=Array();
-  while($s = @mysql_fetch_row($e)){
-$pcont++;
-	$vars["ID"]	= $s[0];
-	$vars["MAC"]	= $s[1];
-	$vars["IP"]	= $s[2];
-	$vars["COMP"]	= htmlspecialchars($s[3]);
-	$vars["NICK"]	= htmlspecialchars($s[4]);
-	$vars["DATE"]	= $s[9];
-	$vars["TO"]	= htmlspecialchars($s[6]);
-	$vars["MESSAGE"]= popup_messageparse($s[8], $pcont==2);
-
-	$output .= theme("popup", $vars);
-  };
-	$tpl->assign( array( "POPUPS" 	=> $output));
+/**
+ * Parse popup message
+ *
+ * @param mysql_resource mysql_resource result of mysql_query
+ *
+ * @return string
+ */
+function popup_parse($mysql_resource) {
+	static $pcont=0;
+	$output='';
+	$vars=Array();
+	while($s = @mysql_fetch_row($mysql_resource)){
+		$pcont++;
+		$vars["ID"]	= $s[0];
+		$vars["MAC"]	= $s[1];
+		$vars["IP"]	= $s[2];
+		$vars["COMP"]	= htmlspecialchars($s[3]);
+		$vars["NICK"]	= htmlspecialchars($s[4]);
+		$vars["DATE"]	= $s[9];
+		$vars["TO"]	= htmlspecialchars($s[6]);
+		$vars["MESSAGE"]= popup_messageparse($s[8], $pcont==2);
+	
+		$output .= theme("popup", $vars);
+  	}
+	return $output;
+}
+	$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
 
 ?>

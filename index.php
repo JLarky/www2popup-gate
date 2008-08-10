@@ -21,6 +21,8 @@ include("lib/popup-utils.php");
 # Var
 #########
 $mpopups=20;
+$vars=Array();
+
 
 # Выбор Темы оформления
 	$tpl = new FastTemplate("design/".$INFO["site_design"]);
@@ -51,6 +53,9 @@ $mpopups=20;
 			"SCRIPTS"		=> ''
 			 ) 
 				);
+	$vars['content']="<tr><td>No items to display</td></tr>";
+	$vars['title']=$USER['user_name']."@jlarky.gate";
+	$vars['head']=' ';
 
  if ($USER['user_perm']>0) {
    $tpl->assign(array( 	"LOGOUT1"		=> "",
@@ -64,6 +69,7 @@ $mpopups=20;
 ############
 # MENU
 	$tpl->parse("MENU", 	array("menu"));
+	$vars['menu']	= $tpl->MENU;
 
 ############
 # NAVIGATE
@@ -84,10 +90,14 @@ $mpopups=20;
   if (!$u == 0 and ($act=="gate" or $act=="private")) {
    						  $tpl->assign( array( "META" => $tpl->get_assigned("META").
 						  "<meta http-equiv=\"Refresh\" content=\"{U}; url={ACT}-{C}&amp;u={U}\" />" ));
+	$vars['head'] .= "<meta http-equiv=\"Refresh\" content=\"{U}; url={ACT}-{C}&amp;u={U}\" />";
 
 				};
 
   if ($act=="gate" and isset($_COOKIE['has_js']) and $c == 0) {
+	$vars['head'] .= '<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>
+<script type="text/javascript" src="/js/jquery.timer.js"></script>
+<script type="text/javascript" src="updater.js"></script>';
  						  $tpl->assign( array( "SCRIPTS" => '<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>
 <script type="text/javascript" src="/js/jquery.timer.js"></script>
 <script type="text/javascript" src="updater.js"></script>'));
@@ -97,6 +107,8 @@ $mpopups=20;
 ############
 # MAIN
 	include "inc/main.php";
+	$vars['navigate'] = $tpl->NAVIGATE;
+	$vars['main']	= $tpl->MAIN;
 
 ############
 # STBAR
@@ -104,10 +116,17 @@ $mpopups=20;
  $mtime[1]+$mtime[0];$tend=$mtime;$totaltime=($tend-$tstart);
  $tpl->assign( array( "TIME" => sprintf("%.3f",$totaltime)));
  $tpl->parse("STBAR", 	array("stbar"));
+	$vars['stbar']	= $tpl->STBAR;
+
 
 ################
 # Making content
 ################
+if ($_REQUEST['new']) {
+ print theme('index', $vars);
+
+} else {
  $tpl->parse("start", 	array("start"));
  $tpl->FastPrint();
+}
 ?>

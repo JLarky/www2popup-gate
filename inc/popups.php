@@ -42,29 +42,34 @@ if (!function_exists('popup_messageparse')) {
 		return $message.$spam;
 	}
 }
-
-################################
-# output:	{POPUPS}
-################################
-
-############
-# PROCESSING DATA
-static $pcont=0;
-$output='';
-$vars=Array();
-  while($s = @mysql_fetch_row($e)){
-$pcont++;
-	$vars["ID"]	= $s[0];
-	$vars["MAC"]	= $s[1];
-	$vars["IP"]	= $s[2];
-	$vars["COMP"]	= htmlspecialchars($s[3]);
-	$vars["NICK"]	= htmlspecialchars($s[4]);
-	$vars["DATE"]	= $s[9];
-	$vars["TO"]	= htmlspecialchars($s[6]);
-	$vars["MESSAGE"]= popup_messageparse($s[8], $pcont==2);
-
-	$output .= theme("popup", $vars);
-  };
-	$tpl->assign( array( "POPUPS" 	=> $output));
+if (!function_exists('popup_parse')) {
+/**
+ * Parse popup message
+ *
+ * @param mysql_resource mysql_resource result of mysql_query
+ *
+ * @return string
+ */
+function popup_parse($mysql_resource) {
+	static $pcont=0;
+	$output='';
+	$vars=Array();
+	while($s = @mysql_fetch_row($mysql_resource)){
+		$pcont++;
+		$vars["ID"]	= $s[0];
+		$vars["MAC"]	= $s[1];
+		$vars["IP"]	= $s[2];
+		$vars["COMP"]	= htmlspecialchars($s[3]);
+		$vars["NICK"]	= htmlspecialchars($s[4]);
+		$vars["DATE"]	= $s[9];
+		$vars["TO"]	= htmlspecialchars($s[6]);
+		$vars["MESSAGE"]= popup_messageparse($s[8], $pcont==2);
+	
+		$output .= theme("popup", $vars);
+  	}
+	return $output;
+}
+}
+	$tpl->assign( array( "POPUPS" 	=> popup_parse($e)));
 
 ?>
