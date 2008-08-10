@@ -12,6 +12,7 @@ include("inc/cookie.php");
 include("inc/header.php");
 include("inc/fasttemplates.php");
 include("lib/theme.php");
+include("lib/popup-utils.php");
 
 // include("inc/settings.php");
 // include("inc/stat.php");

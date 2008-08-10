@@ -9,42 +9,6 @@ $ip=getenv("REMOTE_ADDR");
 
 // print_r($_REQUEST);
 if (!isset($_REQUEST['sendlater'])) {
-/*
-$tmpfname = tempnam("/var/www/gate/bin/", "msg");
-$handle = fopen($tmpfname, "w");
- if ($USER['set_header'] != 0)
-{
-fwrite($handle, "From " .$ip. " # http://jlarky.dorms.spbu.ru/gate" );
-fwrite($handle, "\n");
-};
-
-fwrite($handle, stripslashes(str_replace("\r", "", $_POST['P_M'] )));
-
-$from=escapeshellcmd($_REQUEST['P_F']);
-$to=escapeshellcmd($_REQUEST['P_T']);
-$to=ereg_replace("\*", "14 15 16 ALTNET MSHOME NT WORKGROUP",$to);
-$to=ereg_replace("\ ", "\" \"",$to);
-
-#if ( $to=="*") { $to ="14 15 16 ALTNET KINDERGARDEN NT WORKGROUP";};
-fclose($handle);
-system("
-export HOME=/home/jlarky
-export LANG=ru_RU.UTF8
-ulimit -t 1
-cat ".$tmpfname."| popupnicheg -n \"".$from."\" -H 0:e0:29:2e:82:88 -I 10.0.144.1 \"".$to."\" | grep \"were sent\" > ".$tmpfname.".txt # 2>&1
-");
-
-
-$handle = fopen($tmpfname.".txt", "r");
-$content = fread( $handle, filesize( $tmpfname.".txt" ));
-fclose($handle);
-unlink($tmpfname);
-unlink($tmpfname.".txt");
-*/
-// раньше мы делали так
-
-// а счас так
-  
 
 function send_popup($from, $to, $msg) {
 $descriptorspec = array(
