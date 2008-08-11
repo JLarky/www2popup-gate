@@ -100,7 +100,7 @@ $vars=Array();
 <script type="text/javascript" src="/js/jquery.timer.js"></script>
 <script type="text/javascript" src="updater.js"></script>';
   }
-	$vars['navigate'] = ($act=="gate" || $act=="private") ? theme('navigate', $vars) : '';
+	$vars['navigate'] = ($act=="gate" || $act=="private" || $act=="browse") ? theme('navigate', $vars) : '';
 
 
 ############
