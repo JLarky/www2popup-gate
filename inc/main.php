@@ -15,8 +15,8 @@ if ($jl_act=="gate" or $jl_act=="private" or $jl_act=="search2") {
 if ($jl_act=='private') {
 
 if ($USER['user_perm']==0) {
-	$tpl->assign(array( "CONTENT"	=> "{LOGIN}"));
-	$tpl->parse("LOGIN", array("login"));
+	$vars['navigate']='';
+	$vars['content'] = theme("login", $vars);
 ;}
 else {
 if ($USER['set_outgoing']) { # показывать ли исходящие сообщения
