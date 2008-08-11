@@ -1,14 +1,12 @@
 <?php
 # SEND BEGIN
 if ($jl_act=="send") {
-include "modules/send.php";
-$vars['content']=send_page();
-
-}; # SEND END
+	include "modules/send.php";
+	$vars['content']=send_page();
+};# SEND END
 
 # GATE and PRIVATE BEGING
-if ($jl_act=="gate" or $jl_act=="private" or $jl_act=="search2")
-{
+if ($jl_act=="gate" or $jl_act=="private" or $jl_act=="search2") {
 ############
 # SELECT FROM DB
   mysql_select_db($INFO['base_name']);
@@ -122,9 +120,8 @@ if (intval($_REQUEST['c']) < 30) $_REQUEST['c']=30;
 
 # STAT BEGING
 if ($jl_act=="stat") {
-	include "stat.php";
-	$vars['navigate']='';
-	$tpl->assign(array( "CONTENT"	=> "{STAT}"));
+	include "modules/stat.php";
+	$vars['content']=stat_page();
 }; # STAT END
 
 # SEARCH BEGING

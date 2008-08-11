@@ -1,4 +1,6 @@
 <?php
+function stat_page() {
+return "Бейте JLarky чтобы он починил";
 ################################
 # output:	{STAT}
 ################################
@@ -16,7 +18,7 @@ if ($profiling) {
 // создаём временную таблицу из базы всех общих попапов
  $q="CREATE TEMPORARY TABLE `tmp_".$INFO['base_tabl']."` TYPE=HEAP SELECT `id`, `src_ntb`, `time`, LENGTH(`msg`) AS 'len' FROM ".$INFO['base_tabl']." WHERE `".$INFO['base_tabl']."`.`dst_mac`='ff:ff:ff:ff:ff:ff'";
  $e = mysql_query($q);
-
+//echo $q;
 $e = mysql_query("SELECT COUNT(*) FROM `tmp_".$INFO['base_tabl']."`");
 $s = mysql_fetch_row($e);
 	$tpl->assign( array( "ALL_POPUP" 	=> $s[0]));
@@ -46,7 +48,7 @@ $s = @mysql_fetch_row($e);
 	$tpl->assign( array( "ALL_CHARSET" 	=> $s[0]));
 
 $topflud=0;
-$e = @mysql_query("SELECT UPPER(`src_ntb`), COUNT(*) AS `kol`, MAX(`time`), SUM(`len`) FROM `tmp_".$INFO['base_tabl']."` GROUP BY `src_ntb` ORDER BY `kol` DESC LIMIT 300");
+$e = @mysql_query("SELECT UPPER(`src_ntb`), COUNT(*) AS `kol`, MAX(`time`), SUM(`len`) FROM `tmp_".$INFO['base_tabl']."` GROUP BY `src_ntb` ORDER BY `kol` DESC LIMIT 21");
   while($s = @mysql_fetch_row($e)){
 $topflud=$topflud+1;
 	$tpl->assign( array( "FLUDERSTOP" 	=> $topflud));
@@ -72,5 +74,5 @@ if ($profiling) {
  };
 };
 // 	$tpl->assign( array( "LATER_POPUP" 	=> $s[0]));
-
+}
 ?>

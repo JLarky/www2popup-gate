@@ -1,4 +1,6 @@
 <?php
+function stat_page() {
+return "<tr><td>Бейте JLarky чтобы он починил</td></tr>";
 ################################
 # output:	{STAT}
 ################################
@@ -72,5 +74,5 @@ if ($profiling) {
  };
 };
 // 	$tpl->assign( array( "LATER_POPUP" 	=> $s[0]));
-
+}
 ?>

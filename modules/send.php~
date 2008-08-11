@@ -37,7 +37,6 @@ global $user_name, $USER, $INFO;
 		
 		$content="";
 		$res=send_popup($_REQUEST['p_f'], $popup_to, $msg);
-		var_dump($res);
 		$errs=Array();
 		$res=explode("\n", $res);
 		foreach ($res as $str) {
