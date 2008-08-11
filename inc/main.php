@@ -131,10 +131,13 @@ if ($jl_act=="search") {
 
 
 # SETTINGS BEGING
-if ($jl_act=="settings" and $user_perm>0) {
-	include "settings.php";
-	$vars['navigate']='';
-	$tpl->assign(array( "CONTENT"	=> "{SETTINGS}"));
+if ($jl_act=="settings") {
+	if ($user_perm>0) {
+	include "modules/settings.php";
+	$vars['content']=settings_page();
+	} else {
+	$vars['content']="<tr><td>Доступно только зарегистрированным</td></tr>";
+	}
 }; # SETTINGS END
 
 

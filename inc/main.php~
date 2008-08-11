@@ -127,15 +127,17 @@ if ($jl_act=="stat") {
 # SEARCH BEGING
 if ($jl_act=="search") {
 	$vars['content']=theme('search', $vars);
-//	$tpl->parse("CONTENT", 	array("search"));
 }; # SEARCH END
 
 
 # SETTINGS BEGING
-if ($jl_act=="settings" and $user_perm>0) {
-	include "settings.php";
-	$vars['navigate']='';
-	$tpl->assign(array( "CONTENT"	=> "{SETTINGS}"));
+if ($jl_act=="settings") {
+	if ($user_perm>0) {
+	include "modules/settings.php";
+	$vars['content']=settings_page();
+	} else {
+	$vars['content']="Доступно только зарегистрированным";
+	}
 }; # SETTINGS END
 
 
