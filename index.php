@@ -106,16 +106,13 @@ $vars=Array();
 # MAIN
 
 	include "inc/main.php";
-	//if (!$vars['main']) 
-	//	$vars['main']	= $tpl->MAIN;
 
 ############
 # STBAR
  $mtime = microtime();$mtime = explode(" ",$mtime);$mtime= 
  $mtime[1]+$mtime[0];$tend=$mtime;$totaltime=($tend-$tstart);
- $tpl->assign( array( "TIME" => sprintf("%.3f",$totaltime)));
- $tpl->parse("STBAR", 	array("stbar"));
-	$vars['stbar']	= $tpl->STBAR;
+ $vars["time"] = sprintf("%.3f",$totaltime);
+ 	$vars['stbar']	= theme('stbar', $vars);
 
 ################
 # Making content
