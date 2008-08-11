@@ -9,6 +9,7 @@
  */
 
 function popup_messageparse($message, $adsense = false) {
+	global $USER;
 	$message = htmlspecialchars($message);
 	//$s[6] = str_replace ("{", "&#123;", $s[6]);
 	//$s[6] = str_replace ("}", "&#125;", $s[6]);
