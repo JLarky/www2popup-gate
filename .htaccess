@@ -14,7 +14,7 @@
  Allow from all
 </Files>
 
-<Files "updater.js">
+<Files "updater.php">
  Allow from all
 </Files>
 

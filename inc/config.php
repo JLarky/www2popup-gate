@@ -1,6 +1,7 @@
 <?php
 $INFO['site_design']			=	'default';
 $INFO['admin_mail']			=	'jlarky@gmail.com';
+$INFO['cookie_path']			=	'/gate'; // in my case. default "/"
 $INFO['base_host']			=	'localhost';
 $INFO['base_user']			=	'notreal';
 $INFO['base_pass']			=	"real i'll get from conf-file"; //see bottom

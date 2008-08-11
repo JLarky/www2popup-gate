@@ -59,9 +59,9 @@ $user_perm=0;
 		$_SESSION['user_name']=$user_name;
 
 // save COOKIES
-		setcookie("user_id",	$user_id, $d, "/gate");
-		setcookie("user_passwd",$user_passwd, $d, "/gate");
-		setcookie("user_name",	$user_name, $d, "/gate");
+		setcookie("user_id",	$user_id, $d, $INFO['cookie_path']);
+		setcookie("user_passwd",$user_passwd, $d, $INFO['cookie_path']);
+		setcookie("user_name",	$user_name, $d, $INFO['cookie_path']);
 
 # массив в котором хранится информация о пользователе
 $USER['user_id']=$user_id;

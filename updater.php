@@ -29,10 +29,10 @@ var clock=$.timer(1000, function() {
 function updater_toggle(t) {
 	if (t) {
 	updater.reset(5000);clock.reset(1000);bla()
-	document.cookie='updater=1; path=/gate';
+	document.cookie='updater=1; path=<?php include "inc/config.php"; echo $INFO['cookie_path']?>';
 	} else {
 	updater.stop(); clock.stop();
-	document.cookie='updater=0; path=/gate';
+	document.cookie='updater=0; path=<?php echo $INFO['cookie_path']?>';
 	}
 	$("#u_on_off a").toggle()
 }

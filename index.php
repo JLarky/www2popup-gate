@@ -58,7 +58,7 @@ $vars=Array();
 	$vars['head']	= "<meta http-equiv=\"Refresh\" content=\"$u; url=$act-$c&amp;u=$u\" />";
 
   	if ($act=="gate" and isset($_COOKIE['has_js']) and $c == 0)
-	$vars['head']	= "\n".'<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>'."\n".'<script type="text/javascript" src="/js/jquery.timer.js"></script>'."\n".'<script type="text/javascript" src="updater.js"></script>';
+	$vars['head']	= "\n".'<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>'."\n".'<script type="text/javascript" src="/js/jquery.timer.js"></script>'."\n".'<script type="text/javascript" src="updater.php"></script>';
 
 	$vars['navigate'] = ($act=="gate" || $act=="private" || $act=="browse") ? theme('navigate', $vars) : '';
 
