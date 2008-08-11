@@ -4,7 +4,7 @@
     <a title="<?=$COMP?>; ip: <?=$IP?>; mac <?=$MAC?>"><b><?=$NICK?></b></a> to <b><?=$TO?></b> at <?=$DATE?>
  <a href="browse-<?=$ID?>" class="browse-link">#<?=$ID?></a>
     </div>
-    <a href="send&amp;id=<?=$ID?>">ответитиь</a>
+    <a href="send&amp;id=<?=$ID?>">ответить</a>
     </div>
 
     <div class="message-text"><?=$MESSAGE?></div>
