@@ -1,24 +1,22 @@
 <?php 
-ob_start();
-$mtime = microtime(); 
-$mtime = explode(" ",$mtime); 
-$mtime = $mtime[1] + $mtime[0]; 
-$tstart = $mtime;
+	ob_start();
+	$mtime = microtime();$mtime = explode(" ",$mtime);$mtime = $mtime[1] + $mtime[0];$tstart = $mtime;
 
-########
-# Uses
-#########
-include("inc/config.php");
-mysql_connect($INFO['base_host'],$INFO['base_user'],$INFO['base_pass']);
-mysql_query("SET NAMES 'utf8'");
-mysql_select_db($INFO['base_name']);
-include("inc/cookie.php");
-include("lib/theme.php");
-include("lib/popup-utils.php");
+################
+# MySQL connect
+	include("inc/config.php");
+	mysql_connect($INFO['base_host'],$INFO['base_user'],$INFO['base_pass']);
+	mysql_query("SET NAMES 'utf8'");
+	mysql_select_db($INFO['base_name']);
 
-########
-# Var
-#########
+################
+# Libs
+	include("inc/cookie.php");
+	include("lib/theme.php");
+	include("lib/popup-utils.php");
+
+################
+# Vars
 $mpopups=20;
 $vars=Array();
 
@@ -31,13 +29,12 @@ $vars=Array();
 
 ################
 # Making content
-################
 
-############
+################
 # MENU
 	$vars['menu']	= theme('menu', $vars);
 
-############
+################
 # NAVIGATE
 	if (isset($INFO['act'][$_REQUEST['act']]))
 		     $jl_act=$_REQUEST['act'];
@@ -50,39 +47,33 @@ $vars=Array();
 	$vars['cn']	= max(0, $c-$mpopups);
 	$vars['cp']	= max(0, $c+$mpopups);
 
-  if (isset($_GET['u'])) $_REQUEST['u']=$_GET['u'];
-  if (isset($_REQUEST['u'])) { $u = ( $_REQUEST['u']==0 ? 0 : max(10,intval($_REQUEST['u'])));} else {$u = 0;};
-		  setcookie("u", $u, 0, "/gate");
+	if (isset($_GET['u'])) $_REQUEST['u']=$_GET['u'];
+	if (isset($_REQUEST['u'])) { $u = ( $_REQUEST['u']==0 ? 0 : max(10,intval($_REQUEST['u'])));} else {$u = 0;};
+	setcookie("u", $u, 0, "/gate");
 
 	$vars['u']	= $u;
 	$vars['mpopups']= $mpopups;
 
-  if (!$u == 0 and ($act=="gate" or $act=="private")) {
-	$vars['head'] .= "<meta http-equiv=\"Refresh\" content=\"$u; url=$act-$c&amp;u=$u\" />";
-	};
-  if ($act=="gate" and isset($_COOKIE['has_js']) and $c == 0) {
-	$vars['head'] .= '
-<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>
-<script type="text/javascript" src="/js/jquery.timer.js"></script>
-<script type="text/javascript" src="updater.js"></script>';
-  }
+	if (!$u == 0 and ($act=="gate" or $act=="private"))
+	$vars['head']	= "<meta http-equiv=\"Refresh\" content=\"$u; url=$act-$c&amp;u=$u\" />";
+
+  	if ($act=="gate" and isset($_COOKIE['has_js']) and $c == 0)
+	$vars['head']	= "\n".'<script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>'."\n".'<script type="text/javascript" src="/js/jquery.timer.js"></script>'."\n".'<script type="text/javascript" src="updater.js"></script>';
+
 	$vars['navigate'] = ($act=="gate" || $act=="private" || $act=="browse") ? theme('navigate', $vars) : '';
 
-
-############
+################
 # MAIN
-
 	include "inc/main.php";
 
-############
+################
 # STBAR
- $mtime = microtime();$mtime = explode(" ",$mtime);$mtime= 
- $mtime[1]+$mtime[0];$tend=$mtime;$totaltime=($tend-$tstart);
- 	$vars["time"] = sprintf("%.3f",$totaltime);
+ 	$mtime = microtime();$mtime = explode(" ",$mtime);$mtime= 
+ 	$mtime[1]+$mtime[0];$tend=$mtime;$totaltime=($tend-$tstart);
+ 	$vars["time"]	= sprintf("%.3f",$totaltime);
  	$vars['stbar']	= theme('stbar', $vars);
 
 ################
-# Making content
-################
- print theme('index', $vars);
+# Output page
+	print theme('index', $vars);
 ?>
