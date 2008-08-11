@@ -141,9 +141,5 @@ if ($jl_act=="settings") {
 }; # SETTINGS END
 
 
-if ($user_perm==1) {$tpl->assign(array( "LOGOUT1"=>"","LOGOUT2"=>""));};
-	if (!$tpl->CONTENT) $tpl->assign(array( "CONTENT"	=> $vars['content']));
-	//var_dump($vars['content']);
-
-	$tpl->parse("MAIN", 	array("main"));
+	$vars['main'] = theme('main', $vars);
 ?>

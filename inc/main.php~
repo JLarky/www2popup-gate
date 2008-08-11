@@ -15,7 +15,8 @@ if ($jl_act=="gate" or $jl_act=="private" or $jl_act=="search2") {
 if ($jl_act=='private') {
 
 if ($USER['user_perm']==0) {
-	$vars ['content'] = theme("login", $vars);
+	$vars['navigate']='';
+	$vars['content'] = theme("login", $vars);
 ;}
 else {
 if ($USER['set_outgoing']) { # показывать ли исходящие сообщения
@@ -140,9 +141,8 @@ if ($jl_act=="settings") {
 }; # SETTINGS END
 
 
-if ($user_perm==1) {$tpl->assign(array( "LOGOUT1"=>"","LOGOUT2"=>""));};
-	if (!$tpl->CONTENT) $tpl->assign(array( "CONTENT"	=> $vars['content']));
+	//if (!$tpl->CONTENT) $tpl->assign(array( "CONTENT"	=> $vars['content']));
 	//var_dump($vars['content']);
 
-	$tpl->parse("MAIN", 	array("main"));
+	$vars['main'] = theme('main', $vars);
 ?>

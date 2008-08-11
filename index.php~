@@ -68,8 +68,7 @@ $vars=Array();
 
 ############
 # MENU
-	$tpl->parse("MENU", 	array("menu"));
-	$vars['menu']	= $tpl->MENU;
+	$vars['menu']	= theme('menu', $vars);
 
 ############
 # NAVIGATE

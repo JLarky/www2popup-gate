@@ -106,8 +106,8 @@ $vars=Array();
 # MAIN
 
 	include "inc/main.php";
-	if (!$vars['main']) 
-		$vars['main']	= $tpl->MAIN;
+	//if (!$vars['main']) 
+	//	$vars['main']	= $tpl->MAIN;
 
 ############
 # STBAR
