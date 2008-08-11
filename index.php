@@ -21,14 +21,11 @@ $vars=Array();
 
 	$vars['content']="<tr><td>No items to display</td></tr>";
 	$vars['title']=$USER['user_name']."@jlarky.gate";
-	$vars['message']= "Здесь могла быть ваша реклама";
+	$vars['message']= ($USER['user_perm']>0) ? "" : "Здесь могла быть ваша реклама";
 	$vars['p_f']	= $USER['user_name'];
 	$vars['p_t']	= "*";
 	$vars['head']=' ';
 
- if ($USER['user_perm']>0) {
-	$vars['message']= "Здесь могла быть ваша реклама";
-};
 ################
 # Making content
 ################
