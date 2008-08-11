@@ -121,15 +121,13 @@ if (intval($_REQUEST['c']) < 30) $_REQUEST['c']=30;
 # STAT BEGING
 if ($jl_act=="stat") {
 	include "modules/stat.php";
-	$vars['content']=stat_page() ;
+	$vars['content']=stat_page();
 }; # STAT END
 
 # SEARCH BEGING
 if ($jl_act=="search") {
-//	include "stat.php";
-	$vars['navigate']='';
-	$tpl->assign(array( "CONTENT"	=> "{STAT}"));
-	$tpl->parse("CONTENT", 	array("search"));
+	$vars['content']=theme('search', $vars);
+//	$tpl->parse("CONTENT", 	array("search"));
 }; # SEARCH END
 
 

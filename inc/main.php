@@ -126,10 +126,7 @@ if ($jl_act=="stat") {
 
 # SEARCH BEGING
 if ($jl_act=="search") {
-//	include "stat.php";
-	$vars['navigate']='';
-	$tpl->assign(array( "CONTENT"	=> "{STAT}"));
-	$tpl->parse("CONTENT", 	array("search"));
+	$vars['content']=theme('search', $vars);
 }; # SEARCH END
 
 
