@@ -1,5 +1,9 @@
 <?php 
 ob_start();
+$mtime = microtime(); 
+$mtime = explode(" ",$mtime); 
+$mtime = $mtime[1] + $mtime[0]; 
+$tstart = $mtime;
 
 ########
 # Uses
@@ -9,7 +13,6 @@ mysql_connect($INFO['base_host'],$INFO['base_user'],$INFO['base_pass']);
 mysql_query("SET NAMES 'utf8'");
 mysql_select_db($INFO['base_name']);
 include("inc/cookie.php");
-include("inc/header.php");
 include("lib/theme.php");
 include("lib/popup-utils.php");
 
