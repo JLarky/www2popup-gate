@@ -94,7 +94,6 @@ $vars=Array();
   if (!$u == 0 and ($act=="gate" or $act=="private")) {
 	$vars['head'] .= "<meta http-equiv=\"Refresh\" content=\"$u; url=$act-$c&amp;u=$u\" />";
 	};
-
   if ($act=="gate" and isset($_COOKIE['has_js']) and $c == 0) {
 	$vars['head'] .= '
 <script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>
@@ -118,15 +117,8 @@ $vars=Array();
  $tpl->parse("STBAR", 	array("stbar"));
 	$vars['stbar']	= $tpl->STBAR;
 
-
 ################
 # Making content
 ################
-if ($_REQUEST['new'] or 1) {
  print theme('index', $vars);
-
-} else {
- $tpl->parse("start", 	array("start"));
- $tpl->FastPrint();
-}
 ?>

@@ -9,7 +9,7 @@
 <title><?=$title?></title>
 <link href="style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript"><!--
-document.cookie='has_js=1; path=/gate';
+document.cookie='has_js=1; path=/gate-dev';  <?php // TODO ?>
 --></script>
 </head>
 <body>
