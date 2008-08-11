@@ -1,7 +1,6 @@
 <?php
 function send_page() {
-global $user_name, $USER, $INFO;
-	$vars=Array();
+global $user_name, $USER, $INFO, $vars;
 	if (isset($_REQUEST['p_f']) and isset($_REQUEST['p_t']) and isset($_REQUEST['p_m'])) { // i.e. we are going to send message
 		$ip=getenv("REMOTE_ADDR");
 	

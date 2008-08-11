@@ -74,31 +74,29 @@ global $user_name, $USER, $INFO;
 	} else {
 		$vars['sendlog']	= "";
 	
-	if (@$_REQUEST['id'] != "") {
-	
-		if ($USER['set_outgoing']) { # показывать ли исходящие сообщения
-		$outgoing="UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`src_ntb`)";
-		} else {
-		$outgoing=0;
+		if (@$_REQUEST['id'] != "") {
+		
+			if ($USER['set_outgoing']) { # показывать ли исходящие сообщения
+			$outgoing="UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`src_ntb`)";
+			} else {
+			$outgoing=0;
+			};
+		
+		
+			############
+			# SELECT FROM DB
+			$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE (`id`=".intval($_REQUEST['id']).") and ((`dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` WHERE `uid`=1 and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`dst_ntb`) or $outgoing))) or `dst_mac`='ff:ff:ff:ff:ff:ff') LIMIT 1";
+			$s = @mysql_fetch_row(mysql_query($query));
+			$s[8] = ">" . $s[8];
+			$s[8] = str_replace("\r", "",$s[8]);
+			$s[8] = str_replace("\n", "\n>",$s[8]);
+			$s[8] = $s[8]."\r\n>\r\n";
+			$s[8] = htmlspecialchars($s[8	]);
+			$vars['message']	= $s[8];
+			$vars['p_t']		= $s[3];
+			$vars['p_f']		= $user_name;
+		
 		};
-	
-	
-		############
-		# SELECT FROM DB
-		$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE (`id`=".intval($_REQUEST['id']).") and ((`dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` WHERE `uid`=1 and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`dst_ntb`) or $outgoing))) or `dst_mac`='ff:ff:ff:ff:ff:ff') LIMIT 1";
-		$s = @mysql_fetch_row(mysql_query($query));
-		$s[8] = ">" . $s[8];
-		$s[8] = str_replace("\r", "",$s[8]);
-		$s[8] = str_replace("\n", "\n>",$s[8]);
-		$s[8] = $s[8]."\r\n>\r\n";
-		$s[8] = htmlspecialchars($s[8	]);
-		$vars['message']	= $s[8];
-		$vars['p_t']		= $s[3];
-		$vars['p_f']		= $user_name;
-	
-	};
-	
-	//$tpl->parse("CONTENT", array("send"));
 	}
 	return theme('send', $vars);
 };

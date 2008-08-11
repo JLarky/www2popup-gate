@@ -10,12 +10,8 @@ mysql_query("SET NAMES 'utf8'");
 mysql_select_db($INFO['base_name']);
 include("inc/cookie.php");
 include("inc/header.php");
-include("inc/fasttemplates.php");
 include("lib/theme.php");
 include("lib/popup-utils.php");
-
-// include("inc/settings.php");
-// include("inc/stat.php");
 
 ########
 # Var
@@ -23,44 +19,15 @@ include("lib/popup-utils.php");
 $mpopups=20;
 $vars=Array();
 
-
-# Выбор Темы оформления
-	$tpl = new FastTemplate("design/".$INFO["site_design"]);
-
-	$tpl->define(array("start"		=> "index.tpl"));
-	$tpl->define(array("menu"		=> "menu.tpl"));
-	$tpl->define(array("navigate"		=> "navigate.tpl"));
-	$tpl->define(array("snavigate"		=> "snavigate.tpl"));
-	$tpl->define(array("popup"		=> "popup.tpl"));
-	$tpl->define(array("login"		=> "login.tpl"));
-	$tpl->define(array("settings"		=> "settings.tpl"));
-	$tpl->define(array("stbar"		=> "stbar.tpl"));
-	$tpl->define(array("search"		=> "search.tpl"));
-	$tpl->define(array("send"		=> "send.tpl"));
-	$tpl->define(array("sended"		=> "sended.tpl"));
-	$tpl->define(array("main"		=> "main.tpl"));
-
-	$tpl->assign(
-		array( 
-//			"CONTENT"		=> "<tr><td>No items to display</td></tr>",
-			"LOGOUT1"		=> "<!--",
-			"LOGOUT2"		=> "-->",
-			"P_F"			=> $USER['user_name'],
-			"P_T"			=> "*",
-			"MESSAGE"		=> "Здесь могла быть ваша реклама",
-			"TITLE"			=> $USER['user_name']."@jlarky.gate",
-			"META"			=> "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n",
-			"SCRIPTS"		=> ''
-			 ) 
-				);
 	$vars['content']="<tr><td>No items to display</td></tr>";
 	$vars['title']=$USER['user_name']."@jlarky.gate";
+	$vars['message']= "Здесь могла быть ваша реклама";
+	$vars['p_f']	= $USER['user_name'];
+	$vars['p_t']	= "*";
 	$vars['head']=' ';
 
  if ($USER['user_perm']>0) {
-   $tpl->assign(array( 	"LOGOUT1"		=> "",
-			"LOGOUT2"		=> "",
-			"MESSAGE"		=> "") );
+	$vars['message']= "Здесь могла быть ваша реклама";
 };
 ################
 # Making content
@@ -111,7 +78,7 @@ $vars=Array();
 # STBAR
  $mtime = microtime();$mtime = explode(" ",$mtime);$mtime= 
  $mtime[1]+$mtime[0];$tend=$mtime;$totaltime=($tend-$tstart);
- $vars["time"] = sprintf("%.3f",$totaltime);
+ 	$vars["time"] = sprintf("%.3f",$totaltime);
  	$vars['stbar']	= theme('stbar', $vars);
 
 ################
