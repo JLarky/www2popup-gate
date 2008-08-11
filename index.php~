@@ -42,7 +42,7 @@ $vars=Array();
 
 	$tpl->assign(
 		array( 
-			"CONTENT"		=> "<tr><td>No items to display</td></tr>",
+//			"CONTENT"		=> "<tr><td>No items to display</td></tr>",
 			"LOGOUT1"		=> "<!--",
 			"LOGOUT2"		=> "-->",
 			"P_F"			=> $USER['user_name'],
@@ -94,14 +94,14 @@ $vars=Array();
   if (!$u == 0 and ($act=="gate" or $act=="private")) {
 	$vars['head'] .= "<meta http-equiv=\"Refresh\" content=\"$u; url=$act-$c&amp;u=$u\" />";
 	};
-
   if ($act=="gate" and isset($_COOKIE['has_js']) and $c == 0) {
 	$vars['head'] .= '
 <script type="text/javascript" src="/js/jquery-1.2.6.pack.js"></script>
 <script type="text/javascript" src="/js/jquery.timer.js"></script>
 <script type="text/javascript" src="updater.js"></script>';
   }
-	$vars['navigate'] = theme('navigate', $vars);
+	$vars['navigate'] = ($act=="gate" || $act=="private") ? theme('navigate', $vars) : '';
+
 
 ############
 # MAIN
@@ -118,15 +118,8 @@ $vars=Array();
  $tpl->parse("STBAR", 	array("stbar"));
 	$vars['stbar']	= $tpl->STBAR;
 
-
 ################
 # Making content
 ################
-if ($_REQUEST['new'] or 1) {
  print theme('index', $vars);
-
-} else {
- $tpl->parse("start", 	array("start"));
- $tpl->FastPrint();
-}
 ?>
