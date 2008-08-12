@@ -2,16 +2,32 @@
 function stat_page() {
 	global $INFO;
 
+	$vars=Array();
 
-	$q="select count(*) as 'count', UPPER(src_mls) as 'nick' from `".$INFO['base_tabl']."` WHERE LOWER(dst_mac)='ff:ff:ff:ff:ff:ff' GROUP BY src_mls ORDER BY `count` DESC limit 10";
+	list($popups_total) = mysql_fetch_array(mysql_query("SELECT count(*) as 'count' FROM `".$INFO['base_tabl']."`"));
+	echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+	$vars['popups_total'] = $popups_total;
+
+	list($chars_total) = mysql_fetch_array(mysql_query("SELECT SUM(LENGTH(`msg`)) as 'chars' FROM `".$INFO['base_tabl']."`"));
+	echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+	$vars['chars_total'] = $chars_total;
+
+
+	$q="select count(*) as 'popups', SUM(LENGTH(`msg`)) as 'chars', LOWER(src_mls) as 'nick' from `".$INFO['base_tabl']."` WHERE LOWER(dst_mac)='ff:ff:ff:ff:ff:ff' GROUP BY src_mls ORDER BY `popups` DESC limit 21";
  	$e = mysql_query($q);
 	echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
 
-	$output='';
+	$output='';$i=1;
 	while ($row = mysql_fetch_array($e)) {
-		$output .= theme('stat_row', $row);
+		$row['num']=$i++;
+		list($last) = mysql_fetch_array(mysql_query("SELECT `time` FROM `".$INFO['base_tabl']."` WHERE LOWER(dst_mac)='ff:ff:ff:ff:ff:ff' and LOWER(`src_mls`)=LOWER('".$row['nick']."') ORDER BY `id` DESC"));
+		echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+		$row['last']= $last;
+		$output .= theme('stat_row', $row, $vars);
 	}
-return theme('stat', Array('stat' => $output));
+	$vars['stat'] = $output;
+
+return theme('stat', $vars);
 
 $profiling=false;
 if ($profiling) {
