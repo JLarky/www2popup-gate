@@ -1,9 +1,17 @@
 <?php
 function stat_page() {
-return "<tr><td>Бейте JLarky чтобы он починил</td></tr>";
-################################
-# output:	{STAT}
-################################
+	global $INFO;
+
+
+	$q="select count(*) as 'count', UPPER(src_mls) as 'nick' from `".$INFO['base_tabl']."` WHERE LOWER(dst_mac)='ff:ff:ff:ff:ff:ff' GROUP BY src_mls ORDER BY `count` DESC limit 10";
+ 	$e = mysql_query($q);
+	echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+
+	$output='';
+	while ($row = mysql_fetch_array($e)) {
+		$output .= theme('stat_row', $row);
+	}
+return theme('stat', Array('stat' => $output));
 
 $profiling=false;
 if ($profiling) {
