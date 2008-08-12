@@ -12,6 +12,7 @@ $INFO['alias_tabl']			=	'alias';
 $INFO['login_tabl']			=	'users';
 $INFO['texts_tabl']			=	'text';
 $INFO['settings_tabl']			=	'settings';
+$INFO['later_tabl']= 'sendlater';
 $INFO['act']				=	Array	("about"	=> "content/about.html"
 							,"bla"		=> "content/bla.html"
 							,"gate"		=> ""

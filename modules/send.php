@@ -51,7 +51,8 @@ global $user_name, $USER, $INFO, $vars;
 			include "inc/sendlater.php";
 			if ( (isset($_REQUEST['p_t'])) and ($_REQUEST['p_t']!="") ) {
 			$content="Сообщение добавленно в очередь";
-			$tmp= new PopupSender($_REQUEST['p_t'], $_REQUEST['p_f'], "From " .$ip. " # http://jlarky.dorms.spbu.ru/gate\n".$_REQUEST['p_m']);
+//			$tmp= new PopupSender($_REQUEST['p_t'], $_REQUEST['p_f'], "From " .$ip. " # http://jlarky.dorms.spbu.ru/gate\n".$_REQUEST['p_m']);
+			$tmp = sendlater($_REQUEST['p_t'], $_REQUEST['p_f'], "From " .$ip. " # http://jlarky.dorms.spbu.ru/gate\n".$_REQUEST['p_m']);
 			} else {
 			$content="вазник эрор";
 			};
