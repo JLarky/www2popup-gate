@@ -1,3 +1,13 @@
+<?php
+header('Content-type: text/javascript');
+$request = getallheaders();
+if (isset($request['If-Modified-Since'])) {
+header('HTTP/1.1 304 Not Modified');
+die();
+}
+header('Expires: '.gmdate('D, d M Y H:i:s', time()+365*24*60*60).'GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', time()).' GMT');
+?>
 function bla() {
 updater.stop();
 var response="<tr><td>fdgg</td></tr>";
