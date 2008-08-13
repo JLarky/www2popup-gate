@@ -49,7 +49,7 @@ $vars=Array();
 
 	if (isset($_GET['u'])) $_REQUEST['u']=$_GET['u'];
 	if (isset($_REQUEST['u'])) { $u = ( $_REQUEST['u']==0 ? 0 : max(10,intval($_REQUEST['u'])));} else {$u = 0;};
-	setcookie("u", $u, 0, "/gate");
+	setcookie("u", $u, 0, $INFO['cookie_path']);
 
 	$vars['u']	= $u;
 	$vars['mpopups']= $mpopups;
