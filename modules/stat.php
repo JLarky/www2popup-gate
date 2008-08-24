@@ -2,32 +2,90 @@
 function stat_page() {
 	global $INFO;
 
-	$vars=Array();
+	global $user_id;
 
-	list($popups_total) = mysql_fetch_array(mysql_query("SELECT count(*) as 'count' FROM `".$INFO['base_tabl']."`"));
+	$cache=$vars=Array();
+
+	// получаем последнюю запись, если в кеше то же самое, то отдаем кеш.
+
+	$last_msg = mysql_fetch_array(mysql_query("SELECT * FROM `".$INFO['base_tabl']."` ORDER BY `id` DESC LIMIT 1"));
 	echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
-	$vars['popups_total'] = $popups_total;
+		$cache['last_id']=$last_msg['id'];
+		$cache['last_popup']=$last_msg['time'];
 
-	list($chars_total) = mysql_fetch_array(mysql_query("SELECT SUM(LENGTH(`msg`)) as 'chars' FROM `".$INFO['base_tabl']."`"));
-	echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
-	$vars['chars_total'] = $chars_total;
-
-
-	$q="select count(*) as 'popups', SUM(LENGTH(`msg`)) as 'chars', LOWER(src_mls) as 'nick' from `".$INFO['base_tabl']."` WHERE LOWER(dst_mac)='ff:ff:ff:ff:ff:ff' GROUP BY src_mls ORDER BY `popups` DESC limit 21";
- 	$e = mysql_query($q);
+	list($fromcache) = mysql_fetch_array(mysql_query("SELECT `var` FROM `cache` WHERE `name`='stat_cache'"));
 	echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
 
-	$output='';$i=1;
-	while ($row = mysql_fetch_array($e)) {
-		$row['num']=$i++;
-		list($last) = mysql_fetch_array(mysql_query("SELECT `time` FROM `".$INFO['base_tabl']."` WHERE LOWER(dst_mac)='ff:ff:ff:ff:ff:ff' and LOWER(`src_mls`)=LOWER('".$row['nick']."') ORDER BY `id` DESC"));
+	// проверяем
+	$fromcache=unserialize($fromcache);
+	if ($cache['last_id']==$fromcache['last_id'] and 0) {
+		$vars=$fromcache['vars'];
+	} else {
+		//echo 123;
+	
+	//	$cache['']=$last_msg[''];
+	
+		if ($user_id==1) {
+		//var_dump($fromcache);
+		//return '';
+		}
+
+		$tmp = mysql_fetch_array(mysql_query("SELECT * FROM `".$INFO['base_tabl']."` ORDER BY `id` ASC LIMIT 1"));
 		echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
-		$row['last']= $last;
-		$output .= theme('stat_row', $row, $vars);
-	}
-	$vars['stat'] = $output;
+		$vars['first_popup']=$tmp['time'];
 
-return theme('stat', $vars);
+	
+	
+		list($popups_total) = mysql_fetch_array(mysql_query("SELECT count(*) as 'count' FROM `".$INFO['base_tabl']."`"));
+		echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+		$vars['popups_total'] = $popups_total;
+	
+		list($chars_total) = mysql_fetch_array(mysql_query("SELECT SUM(LENGTH(`msg`)) as 'chars' FROM `".$INFO['base_tabl']."`"));
+		echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+		$vars['chars_total'] = $chars_total;
+	
+	
+// fluders
+	if ($user_id==1) {
+		$q="select src_mls as 'nick', count(*) as 'popups', sum(char_length(msg)) as 'chars', max(time) as 'last' from popup.popups where LOWER(`dst_mac`)='ff:ff:ff:ff:ff:ff' group by 1 order by 2 desc limit 21;";
+		$e = mysql_query($q);
+		echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+		$output='';$i=1;
+		while ($row = mysql_fetch_array($e)) {
+			//var_dump($row);
+			$row['num']=$i++;
+			$output .= theme('stat_row', $row, $vars);
+		}
+
+	} else {		
+		$q="select count(*) as 'popups', SUM(LENGTH(`msg`)) as 'chars', LOWER(src_mls) as 'nick' from `".$INFO['base_tabl']."` WHERE LOWER(dst_mac)='ff:ff:ff:ff:ff:ff' GROUP BY src_mls ORDER BY `popups` DESC limit 21";
+		$e = mysql_query($q);
+		echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+	
+		$output='';$i=1;
+		while ($row = mysql_fetch_array($e)) {
+			$row['num']=$i++;
+			list($last) = mysql_fetch_array(mysql_query("SELECT `time` FROM `".$INFO['base_tabl']."` WHERE LOWER(dst_mac)='ff:ff:ff:ff:ff:ff' and LOWER(`src_mls`)=LOWER('".$row['nick']."') ORDER BY `id` DESC"));
+			echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+			$row['last']= $last;
+			$output .= theme('stat_row', $row, $vars);
+		}
+	}
+		$vars['stat'] = $output;
+	
+		$cache['popups_total']=$vars['popups_total'];
+	
+		$cache['vars']=$vars;
+	
+		$var=mysql_real_escape_string(serialize($cache));
+	
+		mysql_query("INSERT INTO `cache` SET `name`='stat_cache', `var`='$var' ON DUPLICATE KEY UPDATE `var`='$var'");
+		//var_dump(mysql_affected_rows());
+		echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';
+	
+	}
+
+return theme('stat', $vars, $cache);
 
 $profiling=false;
 if ($profiling) {

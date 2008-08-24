@@ -4,11 +4,11 @@
 <caption>Статистика</caption>
 <tbody><tr>
 <td align="left">первый попап</td>
-<td align="right">{FIRS_POPUP}</td>
+<td align="right"><?=$first_popup?></td>
 </tr>
 <tr>
 <td align="left">последний попап</td>
-<td align="right">{LATER_POPUP}</td>
+<td align="right"><?=$last_popup?></td>
 </tr>
  
 <tr>
