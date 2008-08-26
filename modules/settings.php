@@ -1,6 +1,6 @@
 <?php
 function settings_page() {
-	global $USER;
+  global $USER, $INFO;
 	$vars=Array();
 
 	if (isset($_REQUEST['settings'])) {
