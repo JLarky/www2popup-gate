@@ -1,4 +1,4 @@
- <tr class="message"><td>
+ <tr class="message <?php if ($spam) echo "spam" ?>"><td>
     <div align="right" class="table_header">
     <div align="left" style="float:left">
     <a title="<?=$COMP?>; ip: <?=$IP?>; mac <?=$MAC?>"><b><?=$NICK?></b></a> to <b><?=$TO?></b> at <?=$DATE?>

@@ -61,6 +61,9 @@ function popup_parse($mysql_resource) {
 		$vars["DATE"]	= $s[9];
 		$vars["TO"]	= htmlspecialchars($s[6]);
 		$vars["MESSAGE"]= popup_messageparse($s[8], $pcont==2);
+
+		$vars["spam"]	= ($s[1]=='00:11:22:22:11:00');
+		$vars["spam"]	= ('spambot'==$vars["NICK"]) || $vars['spam'];
 	
 		$output .= theme("popup", $vars);
   	}

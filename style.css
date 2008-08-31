@@ -34,3 +34,7 @@ padding-bottom:2em;
 width:726px;
 overflow:auto;
 }
+
+#messages tr.spam {
+ opacity:0.5
+}
