@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 <?=$head?>
-<title><?=$title?></title>
+<title><?=$title?> гейт им. mahalex'а</title>
 <link href="style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript"><!--
 document.cookie='has_js=1; path=<?php global $INFO; echo $INFO['cookie_path']?>';
