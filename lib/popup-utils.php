@@ -1,4 +1,46 @@
 <?php
+
+function sendpopup($popup_from, $popup_to, $msg){
+mysql_select_db($INFO['base_name']);
+mysql_query("SET NAMES 'utf8'") or die("Invalid query: " . mysql_error());
+$data=mysql_query("select LOWER(`name`) from `alias` group by `name`;");
+$localnames=Array();
+while ($row = mysql_fetch_row($data)) {
+	$localnames[]=$row[0];
+}
+
+$emulate_to=Array();
+foreach ( $popup_to as $key => $comp) {
+	if (in_array($comp, $localnames) ) {
+		unset($popup_to[$key]); $emulate_to[]=$comp;
+	}
+}
+$epopups=send_epopup($_REQUEST['p_f'], $emulate_to, $msg);
+
+//		$popup_to=join(" ", $popup_to);
+
+$content="";
+$status	= Array();
+foreach ($popup_to as $popup_too) {
+$res=send_popup($popup_from, $popup_too, $msg);
+$res=explode("\n", $res);
+foreach ($res as $str) {
+	if (mb_ereg("[^']+'(.+)' was not sent.*", $str, $reg_srt)) 
+	$status[]=Array($popup_too, 'error', 1);
+	if (mb_ereg(".*([0-9]+)/([0-9]+) were sent.*", $str, $reg_srt) && $reg_srt[1])  
+	$status[]=Array($popup_too, $reg_srt[1], $reg_srt[2]);
+}
+}
+
+$sended['ok']=$sended['all']=0;$sended['error']=Array();
+foreach ($status as $stat) {
+	if ($stat[1] == 'error' ) $sended['error'][]=$stat[0];
+	$sended['ok']=$sended['ok']+$stat[1];
+	$sended['all']=$sended['all']+$stat[2];
+}
+return $sended;
+};
+
 /**
 * Send popup by popupnicheg and return stout and stderr
 *

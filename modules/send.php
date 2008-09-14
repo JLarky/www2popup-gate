@@ -12,40 +12,20 @@ global $user_name, $USER, $INFO, $vars;
 			$msg = "";
 			
 		$msg .= stripslashes(str_replace("\r", "", $_POST['p_m'] ));
+
+		$popup_to=str_replace('*', '14 15 16 ALTNET MSHOME NT WORKGROUP', $_REQUEST['p_t']);
+		$popup_to=explode(" ", $popup_to);
+		$popup_from=$_REQUEST['p_f'];
 		
-		mysql_select_db($INFO['base_name']);
-		mysql_query("SET NAMES 'utf8'") or die("Invalid query: " . mysql_error());
-		$data=mysql_query("select LOWER(`name`) from `alias` group by `name`;");
-		$localnames=Array();
-		while ($row = mysql_fetch_row($data)) {
-			$localnames[]=$row[0];
-		}
+		//$popup_to $popup_from $msg;
 		
-		$popup_to=explode(" ", $_REQUEST['p_t']);
-		$emulate_to=Array();
-		foreach ( $popup_to as $key => $comp) {
-			if (in_array($comp, $localnames) ) {
-				unset($popup_to[$key]); $emulate_to[]=$comp;
-			}
-		}
-		$epopups=send_epopup($_REQUEST['p_f'], $emulate_to, $msg);
-		
-		$popup_to=join(" ", $popup_to);
-		foreach ($localnames as $name) //"(jlarky)([$|\ ])", "\\1%10.0.144.1\\2"
-		$popup_to=mb_eregi_replace("($name)($|\ )", "\\1%127.0.0.1%00:e0:29:2e:82:88\\2", $popup_to);
-		
-		
-		$content="";
-		$res=send_popup($_REQUEST['p_f'], $popup_to, $msg);
-		$errs=Array();
-		$res=explode("\n", $res);
-		foreach ($res as $str) {
-			if (mb_ereg("[^']+'(.+)' was not sent.*", $str, $reg_srt))
-			$content .= "Ошибка отправки на <font color=\"red\">{$reg_srt[1]}</font><br />\n";
-			elseif (mb_ereg(".*([0-9]+)/([0-9]+) were sent.*", $str, $reg_srt)) 
-			$content .= ($reg_srt[1]+$epopups)." из ".($reg_srt[2]+$epopups)." было отправлено.<br />\n";
-		}
-		//$content .="<pre>".print_r($errs, 1)."</pre>";
+
+		$sended=sendpopup($popup_from, $popup_to, $msg);
+
+		$content .= ($sended['ok']+$epopups)." из ".($sended['all']+$epopups)." было отправлено.<br />\n";
+		foreach ($sended['error'] as $comp)
+			$content .= "Ошибка отправки на <span style=\"color:red\">{$comp}</span><br />\n";
+
 	
 	} else {
 		if ($USER['user_perm'] > 0) {
