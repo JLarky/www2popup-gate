@@ -1,6 +1,20 @@
 <?php
+/**
+* Send popup
+*
+* @param string from sender name
+* @param string to reciever(s) name(s) with local aliases
+* @param string msg message text
+*
+* @return string
+*/
 
-function sendpopup($popup_from, $popup_to, $msg){
+function send_popup($popup_from, $popup_to, $msg){
+if (!is_array($popup_to)) {
+$popup_to=str_replace('*', '14 15 16 ALTNET MSHOME NT WORKGROUP', $popup_to);
+$popup_to=explode(" ", $popup_to);
+}
+
 mysql_select_db($INFO['base_name']);
 mysql_query("SET NAMES 'utf8'") or die("Invalid query: " . mysql_error());
 $data=mysql_query("select LOWER(`name`) from `alias` group by `name`;");
@@ -15,16 +29,18 @@ foreach ( $popup_to as $key => $comp) {
 		unset($popup_to[$key]); $emulate_to[]=$comp;
 	}
 }
-$epopups=send_epopup($_REQUEST['p_f'], $emulate_to, $msg);
+$epopups=send_epopup($popup_from, $emulate_to, $msg);
 
 //		$popup_to=join(" ", $popup_to);
 
 $content="";
 $status	= Array();
+$sended['log']='';
 foreach ($popup_to as $popup_too) {
-$res=send_popup($popup_from, $popup_too, $msg);
+$res=send_ppopup($popup_from, $popup_too, $msg);
 $res=explode("\n", $res);
 foreach ($res as $str) {
+	$sended['log'] .= $str."\n";
 	if (mb_ereg("[^']+'(.+)' was not sent.*", $str, $reg_srt)) 
 	$status[]=Array($popup_too, 'error', 1);
 	if (mb_ereg(".*([0-9]+)/([0-9]+) were sent.*", $str, $reg_srt) && $reg_srt[1])  
@@ -32,7 +48,7 @@ foreach ($res as $str) {
 }
 }
 
-$sended['ok']=$sended['all']=0;$sended['error']=Array();
+$sended['ok']=$sended['all']=$epopups;$sended['error']=Array();
 foreach ($status as $stat) {
 	if ($stat[1] == 'error' ) $sended['error'][]=$stat[0];
 	$sended['ok']=$sended['ok']+$stat[1];
@@ -45,13 +61,13 @@ return $sended;
 * Send popup by popupnicheg and return stout and stderr
 *
 * @param string from sender name
-* @param string to reciever(s) name(s)
+* @param string to reciever(!) name
 * @param string msg message text
 *
 * @return string
 */
 
-function send_popup($from, $to, $msg) {
+function send_ppopup($from, $to, $msg) {
 $descriptorspec = array(
    0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
    1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
@@ -59,11 +75,12 @@ $descriptorspec = array(
 );
 
 $cwd = '.';
-$to=mb_ereg_replace("\*", "14 15 16 ALTNET MSHOME NT WORKGROUP",$to);
-$from=mb_ereg_replace("\*", "'*'",$from);
+if (!strlen($to)) {
+var_dump($to);
+return 'Error: $to in null';}
 $env = array('IF' => 'eth1', 'to' => $to, 'netbios' => $from, 'HOME' => '/home/jlarky', 'LANG' => 'ru_RU.UTF-8');
 
-$process = proc_open('popupnicheg -H 0:e0:29:2e:82:88 -I 10.0.144.1 --interface $IF --netbios $netbios $to', $descriptorspec, $pipes, $cwd, $env);
+$process = proc_open('popupnicheg -H 0:e0:29:2e:82:88 -I 10.0.144.1 --interface "$IF" --netbios "$netbios" "$to"', $descriptorspec, $pipes, $cwd, $env);
 
 if (is_resource($process)) {
     fwrite($pipes[0], $msg);
@@ -73,9 +90,12 @@ if (is_resource($process)) {
     $output.=stream_get_contents($pipes[2]);
     fclose($pipes[2]);
     $return_value = proc_close($process);
+//var_dump($output);
 return $output;
 }
 }
+
+
 /**
 * Send popup by creating sql record emulating message recieving.
 *

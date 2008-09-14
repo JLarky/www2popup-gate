@@ -13,14 +13,11 @@ global $user_name, $USER, $INFO, $vars;
 			
 		$msg .= stripslashes(str_replace("\r", "", $_POST['p_m'] ));
 
-		$popup_to=str_replace('*', '14 15 16 ALTNET MSHOME NT WORKGROUP', $_REQUEST['p_t']);
-		$popup_to=explode(" ", $popup_to);
+		$popup_to=$_REQUEST['p_t'];
 		$popup_from=$_REQUEST['p_f'];
 		
-		//$popup_to $popup_from $msg;
-		
 
-		$sended=sendpopup($popup_from, $popup_to, $msg);
+		$sended=send_popup($popup_from, $popup_to, $msg);
 
 		$content .= ($sended['ok']+$epopups)." из ".($sended['all']+$epopups)." было отправлено.<br />\n";
 		foreach ($sended['error'] as $comp)
