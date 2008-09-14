@@ -6,35 +6,26 @@ global $user_name, $USER, $INFO, $vars;
 		$_SESSION['user_name']=$_REQUEST['p_f']; // save user name
 	
 	if (!isset($_REQUEST['sendlater'])) {
-		if (isset($USER['set_header']) and $USER['set_header'])
-			$msg = "From $ip # http://jlarky.dorms.spbu.ru/gate\n";
-		else
-			$msg = "";
-			
+		$msg = (isset($USER['set_header']) and $USER['set_header']) ? "From $ip # http://jlarky.dorms.spbu.ru/gate\n" : "";
 		$msg .= stripslashes(str_replace("\r", "", $_POST['p_m'] ));
-
 		$popup_to=$_REQUEST['p_t'];
 		$popup_from=$_REQUEST['p_f'];
 		
-
 		$sended=send_popup($popup_from, $popup_to, $msg);
 
 		$content .= ($sended['ok']+$epopups)." из ".($sended['all']+$epopups)." было отправлено.<br />\n";
 		foreach ($sended['error'] as $comp)
 			$content .= "Ошибка отправки на <span style=\"color:red\">{$comp}</span><br />\n";
-
 	
 	} else {
 		if ($USER['user_perm'] > 0) {
 			include "inc/sendlater.php";
 			if ( (isset($_REQUEST['p_t'])) and ($_REQUEST['p_t']!="") ) {
 			$content="Сообщение добавленно в очередь";
-//			$tmp= new PopupSender($_REQUEST['p_t'], $_REQUEST['p_f'], "From " .$ip. " # http://jlarky.dorms.spbu.ru/gate\n".$_REQUEST['p_m']);
 			$tmp = sendlater($_REQUEST['p_t'], $_REQUEST['p_f'], "From " .$ip. " # http://jlarky.dorms.spbu.ru/gate\n".$_REQUEST['p_m']);
 			} else {
 			$content="вазник эрор";
 			};
-			// $content="Счас всё будет";
 		} else {
 			$content="Извините, эта функция доступна только зарегистрированным пользователям. Попробуйте кнопку \"отправить\"";
 		} 

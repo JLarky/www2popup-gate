@@ -20,24 +20,15 @@
 		$from=$row['from'];
 		$to=$row['to'];
 		$msg=$row['msg'];
-		$content="";
-		var_dump($from, $to, $msg);
-		$res=send_popup($from, ($to), $msg);
-		$errs=Array();
-		$ok=false;
-		var_dump($res['all'], $res['ok'], $res['error']);
-		$ok=$res['ok'];
-
-		        if ($ok) {
-                        // Succsess
-                        mysql_query("DELETE FROM `".$INFO['later_tabl']."` WHERE `id`='".intval($row['id'])."'");
-                        } else {
-                        // Error
-                        //$log=mysql_real_escape_string(join("\n", $res));
+		$res=send_popup($from, $to, $msg);
+		if ($res['ok']) {
+			// Succsess
+			mysql_query("DELETE FROM `".$INFO['later_tabl']."` WHERE `id`='".intval($row['id'])."'");
+			} else {
+			// Error
 			$log=mysql_real_escape_string($res['log']);
-                        mysql_query("UPDATE `".$INFO['later_tabl']."` SET `counter`=`counter`+1, `comment`='$log'  WHERE
-`id`='".intval($row['id'])."'");
-                        }
+			mysql_query("UPDATE `".$INFO['later_tabl']."` SET `counter`=`counter`+1, `comment`='$log'  WHERE`id`='".intval($row['id'])."'");
+			}
 	}
 
 ?>
