@@ -1,6 +1,6 @@
 <?php
 function send_page() {
-global $user_name, $USER, $INFO, $vars;
+global $user_name, $USER, $INFO, $vars, $user_id;
 	if (isset($_REQUEST['p_f']) and isset($_REQUEST['p_t']) and isset($_REQUEST['p_m'])) { // i.e. we are going to send message
 		$ip=getenv("REMOTE_ADDR");
 		$_SESSION['user_name']=$_REQUEST['p_f']; // save user name
@@ -54,7 +54,7 @@ global $user_name, $USER, $INFO, $vars;
 		
 			############
 			# SELECT FROM DB
-			$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE (`id`=".intval($_REQUEST['id']).") and ((`dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` WHERE `uid`=1 and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`dst_ntb`) or $outgoing))) or `dst_mac`='ff:ff:ff:ff:ff:ff') LIMIT 1";
+			$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE (`id`=".intval($_REQUEST['id']).") and ((`dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` WHERE `uid`=".intval($user_id)." and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`".$INFO['base_tabl']. "`.`dst_ntb`) or $outgoing))) or `dst_mac`='ff:ff:ff:ff:ff:ff') LIMIT 1";
 			$s = @mysql_fetch_row(mysql_query($query));
 			$s[8] = ">" . $s[8];
 			$s[8] = str_replace("\r", "",$s[8]);

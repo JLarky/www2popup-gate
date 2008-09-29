@@ -13,7 +13,7 @@
 
 ################
 # Get list to send
-	$query="SELECT * from `".$INFO['later_tabl']."` WHERE (TIMEDIFF(NOW(), time)>500) OR (`counter` < 15) ORDER BY `counter`, `time` ASC LIMIT 2;";
+	$query="SELECT * from `".$INFO['later_tabl']."` WHERE (TIMEDIFF(NOW(), time)>500) OR (`counter` < 15) ORDER BY `counter`, `time` ASC LIMIT 60;";
 	$sql_res=mysql_query($query);
 	$error=mysql_error();echo ($error ? $error.__LINE__ : '');
 	while ($row=mysql_fetch_array($sql_res)) {
