@@ -61,6 +61,7 @@ function popup_parse($mysql_resource) {
 		$vars["DATE"]	= $s[9];
 		$vars["TO"]	= htmlspecialchars($s[6]);
 		$s[8]=str_replace("http://remont.lvs.ru", "_DND мудак_", $s[8]);
+		$s[8]=str_replace("http://www.evrostroika.ru", "_DND мудак_", $s[8]);
 		$vars["MESSAGE"]= popup_messageparse($s[8], $pcont==2);
 
 		$vars["spam"]	= ($s[1]=='00:11:22:22:11:00');

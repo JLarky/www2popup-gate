@@ -46,7 +46,7 @@ function stat_page() {
 	
 	
 // fluders
-	if ($user_id==1) {
+	if (true) {
 		$q="select src_mls as 'nick', count(*) as 'popups', sum(char_length(msg)) as 'chars', max(time) as 'last' from popup.popups where LOWER(`dst_mac`)='ff:ff:ff:ff:ff:ff' group by 1 order by 2 desc limit 21;";
 		$e = mysql_query($q);
 		echo mysql_error() ? mysql_error().' - '.__FILE__.':'.__LINE__ : '';

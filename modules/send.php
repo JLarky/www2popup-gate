@@ -4,6 +4,11 @@ global $user_name, $USER, $INFO, $vars, $user_id;
 	if (isset($_REQUEST['p_f']) and isset($_REQUEST['p_t']) and isset($_REQUEST['p_m'])) { // i.e. we are going to send message
 		$ip=getenv("REMOTE_ADDR");
 		$_SESSION['user_name']=$_REQUEST['p_f']; // save user name
+
+// special for DND
+                $_POST['p_m']=str_replace("remont.lvs.ru", "_DND мудак_", $_POST['p_m']);
+                $_POST['p_m']=str_replace("www.evrostroika.ru", "_DND мудак_", $_POST['p_m']);
+
 	
 	if (!isset($_REQUEST['sendlater'])) {
 		$msg = (isset($USER['set_header']) and $USER['set_header']) ? "From $ip # http://jlarky.dorms.spbu.ru/gate\n" : "";
