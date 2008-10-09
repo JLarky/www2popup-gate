@@ -80,7 +80,9 @@ var_dump($to);
 return 'Error: $to in null';}
 $env = array('IF' => 'eth1', 'to' => $to, 'netbios' => $from, 'HOME' => '/home/jlarky', 'LANG' => 'ru_RU.UTF-8');
 
-$process = proc_open('popupnicheg -H 0:e0:29:2e:82:88 -I 10.0.144.1 --interface "$IF" --netbios "$netbios" "$to"', $descriptorspec, $pipes, $cwd, $env);
+if (isset($_REQUEST['joke'])) { $modif = "figlet -C /usr/share/figlet/utf8.flc -f banner | "; } else { $modif="";};
+$process = proc_open($modif.'popupnicheg -H 0:e0:29:2e:82:88 -I 10.0.144.1 --interface "$IF" --netbios "$netbios" "$to"', $descriptorspec, $pipes, $cwd, 
+$env);
 
 if (is_resource($process)) {
     fwrite($pipes[0], $msg);

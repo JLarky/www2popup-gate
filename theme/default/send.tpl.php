@@ -18,7 +18,8 @@ value="<?=$p_t?>" size="32" maxlength="70" />&lt;- кому</td>
 
 <textarea name="p_m" cols="70" rows="15" class="table_header"><?=$message?></textarea>
 </p><p>
-<input type="submit" value="отправить"><input type="submit" name="sendlater" value="добавить в очередь"><input type="reset" value="сбросить" />
+<input type="submit" value="отправить"><input type="submit" name="joke" value="отправить больно"><input type="submit" name="sendlater" value="добавить в очередь"><input type="reset" 
+value="сбросить" />
 </p>
 </div></td>
 </tr>
