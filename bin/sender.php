@@ -5,7 +5,7 @@
 	mysql_connect($INFO['base_host'],$INFO['base_user'],$INFO['base_pass']);
 	mysql_query("SET NAMES 'utf8'");
 	mysql_select_db($INFO['base_name']);
-	$error=mysql_error();echo ($error ? $error.__LINE__ : '');
+	$error=mysql_error(); //echo ($error ? $error.__LINE__ : '');
 	
 ################
 # Libs
@@ -15,7 +15,7 @@
 # Get list to send
 	$query="SELECT * from `".$INFO['later_tabl']."` WHERE (TIMEDIFF(NOW(), time)>500) OR (`counter` < 15) ORDER BY `counter`, `time` ASC LIMIT 10;";
 	$sql_res=mysql_query($query);
-	$error=mysql_error();echo ($error ? $error.__LINE__ : '');
+	$error=mysql_error();//echo ($error ? $error.__LINE__ : '');
 	while ($row=mysql_fetch_array($sql_res)) {
 		$from=$row['from'];
 		$to=$row['to'];

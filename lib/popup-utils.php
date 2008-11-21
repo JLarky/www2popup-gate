@@ -76,7 +76,7 @@ $descriptorspec = array(
 
 $cwd = '.';
 if (!strlen($to)) {
-var_dump($to);
+//var_dump($to);
 return 'Error: $to in null';}
 $env = array('IF' => 'eth1', 'to' => $to, 'netbios' => $from, 'HOME' => '/home/jlarky', 'LANG' => 'ru_RU.UTF-8');
 
