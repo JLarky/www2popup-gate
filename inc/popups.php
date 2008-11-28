@@ -66,6 +66,9 @@ function popup_parse($mysql_resource) {
 
 		$vars["spam"]	= ($s[1]=='00:11:22:22:11:00');
 		$vars["spam"]	= ('spambot'==$vars["NICK"]) || $vars['spam'];
+		$vars["spam"]   = $vars['spam'] ||
+		  (strrpos($vars["MESSAGE"], 
+			   "У кого есть эти файлы ? :") !== false);
 		//$vars["spam"]   = $vars['spam'] || ('satt'==strtolower($vars["NICK"]));
 	
 		$output .= theme("popup", $vars);
