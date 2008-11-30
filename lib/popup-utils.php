@@ -74,15 +74,18 @@ $descriptorspec = array(
    2 => array("pipe", "w") // stderr is a file to write to
 );
 
+$from_ip='10.0.144.1';
+if (is_array($from)) {$from=$from[0]; $from_ip=$from[1];}
 $cwd = '.';
 if (!strlen($to)) {
 //var_dump($to);
 return 'Error: $to in null';}
-$env = array('IF' => 'eth1', 'to' => $to, 'netbios' => $from, 'HOME' => '/home/jlarky', 'LANG' => 'ru_RU.UTF-8');
+$env = array('IF' => 'eth1', 'to' => $to, 'netbios' => $from, 
+	'ip' => $from_ip, 'HOME' => '/home/jlarky', 
+	'LANG' => 'ru_RU.UTF-8');
 
 if (isset($_REQUEST['joke'])) { $modif = "figlet -C /usr/share/figlet/utf8.flc -f banner | head -n 63 | tr \"#\\ \" \"\\\$_\" | "; } else { $modif="";};
-$process = proc_open($modif.'popupnicheg -H 0:e0:29:2e:82:88 -I 10.0.0.4 --interface "$IF" --netbios "$netbios" "$to"', $descriptorspec, $pipes, $cwd, 
-$env);
+$process = proc_open($modif.'popupnicheg -H 0:e0:29:2e:82:88 -I $ip --interface "$IF" --netbios "$netbios" "$to"', $descriptorspec, $pipes, $cwd, $env);
 
 if (is_resource($process)) {
     fwrite($pipes[0], $msg);
