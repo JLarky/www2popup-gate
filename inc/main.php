@@ -29,7 +29,7 @@ $outgoing=0;
 
 $query="SELECT * FROM `".$INFO['base_tabl']. "` where `dst_mac`!='ff:ff:ff:ff:ff:ff' and (SELECT count(*) FROM `".$INFO['alias_tabl']."` where `uid`='$user_id' and (UPPER(`".$INFO['alias_tabl']."`.`name`)=UPPER(`popups`.`dst_ntb`) or $outgoing) ) order by `id` desc limit " . $c . ", ".$mpopups;
 };
-} else {$query="SELECT * FROM ".$INFO['base_tabl']. " WHERE dst_mac='ff:ff:ff:ff:ff:ff' ORDER BY id DESC LIMIT " . $c . ", $mpopups";};
+} else {$query="SELECT * FROM ".$INFO['base_tabl']. " WHERE dst_ntb!='DC' and dst_mac='ff:ff:ff:ff:ff:ff' ORDER BY id DESC LIMIT " . $c . ", $mpopups";};
 
 if (0 and $USER['user_id'] == 1 and $jl_act=="search2") {
 $who=$_REQUEST['who'];

@@ -16,7 +16,7 @@ include("lib/theme.php");
 	# SELECT FROM DB
 	mysql_select_db($INFO['base_name']);
 	mysql_query("SET NAMES 'utf8'") or die("Invalid query: " . mysql_error());
-	$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE  (`dst_mac`='ff:ff:ff:ff:ff:ff') and 
+	$query="SELECT * FROM `".$INFO['base_tabl']. "` WHERE dst_ntb!='DC' and (`dst_mac`='ff:ff:ff:ff:ff:ff') and 
 (`".$INFO['base_tabl']."`.id>'".intval($c)."') order by id limit 1";
 	if (isset($query)) {
 $nn=0;
