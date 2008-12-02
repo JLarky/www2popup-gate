@@ -64,6 +64,12 @@ function popup_parse($mysql_resource) {
 		$s[8]=str_replace("http://www.evrostroika.ru", "_DND мудак_", $s[8]);
 		$vars["MESSAGE"]= popup_messageparse($s[8], $pcont==2);
 
+		if ($s[1]=='00:11:22:22:11:00') {
+		$vars["MESSAGE"]="Здравствуйте! Мне двадцать лет, я бородат, живу с мамой, тролль, лжец и девственник. Вот и сейчас...
+
+P.S. Извените за неровный почерк.";
+		};
+
 		$vars["spam"]	= ($s[1]=='00:11:22:22:11:00');
 		$vars["spam"]	= ('spambot'==$vars["NICK"]) || $vars['spam'];
 		$vars["spam"]   = $vars['spam'] ||
